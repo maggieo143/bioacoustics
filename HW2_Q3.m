@@ -6,6 +6,12 @@ rate_upsample=((pointTarget.samplingRateMHz)*(10^6))*4;
 
 time_upsample=[0:1/4:size(pointTarget.data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));
 
+figure;
+for aa=1:128
+    interpolation(:,:,aa)=interp1(time,pointTarget.data(:,:,aa),time_upsample,'linear');
+    imagesc(interpolation(:,:,aa))
+    colormap('gray')
+end
 
 for bb=0:63
     xe_1(bb+1)=((pointTarget.elementSpacingMM)/1000)*(64-bb);
