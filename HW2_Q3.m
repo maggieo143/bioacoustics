@@ -1,18 +1,18 @@
 zone_size=round(max(size(pointTarget.data))/5);
 
 zone1=pointTarget.data(1:zone_size,:,:);
-zone2=pointTarget.data(zone_size:2*zone_size,:,:);
-zone3=pointTarget.data(2*zone_size:3*zone_size,:,:);
-zone4=pointTarget.data(3*zone_size:4*zone_size,:,:);
-zone5=pointTarget.data(4*zone_size:end,:,:);
+zone2=pointTarget.data(zone_size+1:2*zone_size,:,:);
+zone3=pointTarget.data(2*zone_size+1:3*zone_size,:,:);
+zone4=pointTarget.data(3*zone_size+1:4*zone_size,:,:);
+zone5=pointTarget.data(4*zone_size+1:end,:,:);
 
 center=(zone_size/2)+1;
 
 center_zone1=center;
-center_zone2=center+zone_size;
-center_zone3=center+2*zone_size;
-center_zone4=center+3*zone_size;
-center_zone5=center+4*zone_size;
+center_zone2=center+zone_size+1;
+center_zone3=center+2*zone_size+1;
+center_zone4=center+3*zone_size+1;
+center_zone5=center+4*zone_size+1;
 
 timeArray=[0:1/(pointTarget.samplingRateMHz*(10^6)):(size(pointTarget.data,1)-1)/(pointTarget.samplingRateMHz*(10^6))]';
 timeArray=repmat(timeArray,[1,128]);
@@ -88,9 +88,10 @@ for dd=1:length(timeArray)
     time_withDelays(dd,:)=timeArray(dd,:)+time_delay(dd,:);
 end
 
+%for hh=1:128
+    delay_interp(:,1,1)=interp1(time_withDelays(:,1),pointTarget.data(:,1,1),timeArray,'linear');
+    figure;
+    imagesc(delay_interp(:,1,1))
+    colormap('gray')
+%end 
 
-delay_interp(:,1,1)=interp1(time_withDelays(:,1),pointTarget.data(:,1,1),timeArray,'linear');
-
-figure;
-imagesc(delay_interp)
-colormap('gray')
