@@ -89,8 +89,10 @@ for dd=1:length(timeArray)
 end
 
 
-delay_interp(:,1,1)=interp1(time_withDelays(:,1),pointTarget.data(:,1,1),timeArray,'linear');
+for ee=1:128
+delay_interp=interp1(time_withDelays,pointTarget.data(:,:,ee),timeArray,'linear');
+end
 
 figure;
-imagesc(delay_interp)
+imagesc(delay_interp(:,:,ee))
 colormap('gray')
