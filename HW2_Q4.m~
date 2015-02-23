@@ -23,8 +23,7 @@ for hh=1:128
     delay_interp_cont(:,hh,:)=interp1(time_withDelays_cont(:,hh),squeeze(pointTarget.data(:,hh,:)),timeArray2(:,hh),'linear');
 end 
 
-cLow3=min(min(min(delay_interp_cont)));
-cHigh3=max(max(max(delay_interp_cont)));
+
 figure;
-imagesc(20*log10(abs(hilbert(delay_interp_cont(:,:)))),[cLow3,cHigh3])
+imagesc(20*log10(abs(hilbert(delay_interp(:,:)))))
 colormap('gray')

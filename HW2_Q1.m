@@ -52,8 +52,8 @@ for i=1:no_lines
   xdc_focus (receive_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
   
   %   Calculate the received response
-  point_position=[[0 0 1]/1000; [0 0 10]/1000; [0 0 20]/1000; [0 0 30]/1000; [0 0 40]/1000; [0 0 50]/1000; [0 0 60]/1000; [0 0 70]/1000]  %  Position of the point to be imaged
-  [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1;1]); 
+  point_position=[[0 0 1]/1000; [0 0 10]/1000; [0 0 20]/1000; [0 0 30]/1000; [0 0 40]/1000; [0 0 50]/1000; [0 0 60]/1000; [0 0 70]/1000; [0 0 80]/1000; [0 0 90]/1000; [0 0 100]/1000; [0 0 110]/1000; [0 0 120]/1000]  %  Position of the point to be imaged
+  [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1;1;1;1;1;1;1]); 
   %end
   
   %  Store the result
@@ -83,11 +83,14 @@ cHigh=max(max(point_spread_envelope))
 %image of point spread function envelope
 figure;
 imagesc(20*log10(abs(hilbert(point_spread_envelope))))
+title('Compressed Envelope Point Spread')
 colormap('gray')
 
 
 figure;
 imagesc(point_spread_envelope,[cLow,cHigh])
+title('Point Spread')
+colorbar
 colormap('gray')
 %end 
 

@@ -9,7 +9,7 @@ figure;
 for aa=1:128
     interpolation(:,:,aa)=interp1(time,pointTarget.data(:,:,aa),time_upsample,'linear');
     imagesc(interpolation(:,:,aa))
-    title ('Upsampled Interpolation, No Delay')
+    title ('Upsampled Interpolation, no delay')
     colormap('gray')
 end
 
@@ -40,17 +40,15 @@ for jj=1:128
 end
 
 figure;
-cLow=min(min(min(interpolation_delay)));
-cHigh=max(max(max(interpolation_delay)));
+[cLow]=min(min(min(interpolation_delay)));
+[cHigh]=max(max(max(interpolation_delay)));
 imagesc(interpolation_delay(:,:),[cLow, cHigh])
-title('Delayed Upsampled Data')
 colormap('gray')
  
 
  %% Part B.
 figure;
 imagesc(interpolation_delay(1:400,65),[cLow, cHigh])
-title('Channel 65 Point Target')
 colormap('gray')
 
 %% Part C. 
@@ -62,6 +60,5 @@ end
 
 figure;
 imagesc(20*log10(abs(hilbert(sum_interp))),[20 80])
-title('Compressed B-Mode Image of Delayed Upsampled Data')
 colormap('gray')
 
