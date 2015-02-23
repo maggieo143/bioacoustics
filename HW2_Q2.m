@@ -14,27 +14,15 @@ end
 
 zf=0.04;   %[m]
 
-for bb=0:63
-    xe_1(bb+1)=((pointTarget.elementSpacingMM)/1000)*(64-bb);
-    diag_dist_1(bb+1)=sqrt(zf^2 + (xe_1(bb+1))^2);
-    time_diag_1(bb+1)=diag_dist_1(bb+1)/1540; 
+for bb=-63.5:1:63.5
+    xe(bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+    diag_dist(bb+64.5)=sqrt(zf^2 + (xe(bb+64.5))^2);
+    time_diag(bb+64.5)=diag_dist(bb+64.5)/1540; 
 end
 
-for cc=0:63
-    time_delay_1(cc+1)=time_diag_1(cc+1)-time_diag_1(64);
-end 
-
-for dd=1:64
-    xe_2(dd)=((pointTarget.elementSpacingMM)/1000)*dd;
-    diag_dist_2(dd)=sqrt(zf^2 + (xe_2(dd))^2);
-    time_diag_2(dd)=diag_dist_2(dd)/1540;
-    time_delay_2(dd)=time_diag_2(dd)-time_diag_2(1);
+for bb=-63.5:1:63.5
+    time_delay(bb+64.5)=time_diag(bb+64.5)-time_diag(65);
 end
-
-xe=[xe_1 xe_2];
-diag_dist=[diag_dist_1 diag_dist_2];
-time_diag=[time_diag_1 time_diag_2];
-time_delay=[time_delay_1 time_delay_2]; 
 
 for ee=1:length(time_delay)
     samples(ee)=round(time_delay(ee)*rate_upsample);
@@ -58,34 +46,18 @@ colormap('gray')
  
 
  %% Part B.
-% figure;
-% imagesc(interpolation_delay(:,65),[cLow, cHigh])
-% colormap('gray')
-% 
-% %  POINT TARGET???
-
+figure;
+imagesc(interpolation_delay(1:400,65),[cLow, cHigh])
+colormap('gray')
 
 %% Part C. 
-    for jj=1:128
+for jj=1:128
     for kk=1:9725
             sum_interp(kk,jj)=sum(interpolation_delay(kk,:,jj));
     end
-    end
-   
-%      for ll=1:9725
-%         total_interp(ll,1)=sum(sum_interp(ll,:));
-%     end
-  
-cLow=min(min(min(total_interp)));
-cHigh=max(max(max(total_interp)));
+end
 
 figure;
-imagesc(20*log10(abs(hilbert( sum_interp))),[cLow,cHigh])
+imagesc(20*log10(abs(hilbert(sum_interp))),[20 80])
 colormap('gray')
-
-
-%%
-
-%channel_matrices(:,jj,:)=squeeze(veraStrct.data(:,jj,:));
-%interpolation(:,jj,:)=interp1(time,channel_matrices(:,jj,:),time_upsample,'linear');
 
