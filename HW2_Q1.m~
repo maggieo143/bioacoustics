@@ -82,14 +82,14 @@ cHigh=max(max(point_spread_envelope))
 
 %image of point spread function envelope
 figure;
-imagesc(20*log10(abs(hilbert(point_spread_envelope))))
+imagesc(20*log10(abs(hilbert(point_spread_envelope))),[cLow,cHigh])
 colormap('gray')
-
 
 figure;
 imagesc(point_spread_envelope,[cLow,cHigh])
 colormap('gray')
-%end 
+end 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% As the the depth of the scatter changes
+
+% As the the depth of the scatter changes, and becomes further away from
+% the focal point, the 
