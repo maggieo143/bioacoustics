@@ -109,5 +109,5 @@ end
 
 figure;
 imagesc(20*log10(abs(hilbert(zone_interp))),[20,80])
-title('Compressed B-Mode Image of Delayed Zone Data')
+title('Compressed B-Mode Image of Delayed Zone Data [cyst]')
 colormap('gray')
