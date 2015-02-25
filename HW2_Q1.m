@@ -1,6 +1,5 @@
 field_init(-1)
 
-%for zz=[1 10 20 30 40 50 60 70]
 %  Example of use of the new Field II program running under Matlab
 %
 %  This example shows how a phased array B-mode system scans an image
@@ -52,7 +51,7 @@ for i=1:no_lines
   xdc_focus (receive_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
   
   %   Calculate the received response
-  point_position=[[0 0 1]/1000; [0 0 10]/1000; [0 0 20]/1000; [0 0 30]/1000; [0 0 40]/1000; [0 0 50]/1000; [0 0 60]/1000; [0 0 70]/1000; [0 0 80]/1000; [0 0 90]/1000; [0 0 100]/1000; [0 0 110]/1000; [0 0 120]/1000]  %  Position of the point to be imaged
+  point_position=[[0 0 1]/1000; [0 0 10]/1000; [0 0 20]/1000; [0 0 30]/1000; [0 0 40]/1000; [0 0 50]/1000; [0 0 60]/1000; [0 0 70]/1000; [0 0 80]/1000; [0 0 90]/1000; [0 0 100]/1000; [0 0 110]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
   [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1;1;1;1;1;1;1]); 
   %end
   
@@ -77,9 +76,6 @@ for kk=1:min(size(image_data))
     point_spread_envelope(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
 end
 
-cLow=min(min(point_spread_envelope))
-cHigh=max(max(point_spread_envelope))
-
 %image of point spread function envelope
 figure;
 imagesc(20*log10(abs(hilbert(point_spread_envelope))))
@@ -88,11 +84,6 @@ colormap('gray')
 
 
 figure;
-imagesc(point_spread_envelope,[cLow,cHigh])
+imagesc(point_spread_envelope,[-0.4e-21,0.4e-21])
 title('Point Spread')
-colorbar
 colormap('gray')
-%end 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% As the the depth of the scatter changes

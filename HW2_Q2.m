@@ -49,7 +49,7 @@ colormap('gray')
 
  %% Part B.
 figure;
-imagesc(interpolation_delay(1:400,65),[cLow, cHigh])
+imagesc(interpolation_delay(1:250,65),[cLow, cHigh])
 title('Channel 65 Point Target')
 colormap('gray')
 

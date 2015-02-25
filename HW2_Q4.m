@@ -18,13 +18,18 @@ for dd=1:length(timeArray)
     time_withDelays_cont(dd,:)=timeArray2(dd,:)+time_delay_cont(dd,:);
 end
 
-
 for hh=1:128
-    delay_interp_cont(:,hh,:)=interp1(time_withDelays_cont(:,hh),squeeze(pointTarget.data(:,hh,:)),timeArray2(:,hh),'linear');
+    temp_cont=interp1(time_withDelays_cont(:,hh),squeeze(pointTarget.data(:,hh,:)),timeArray2(:,hh),'linear',0);
+    reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2432,1,128]);
 end 
 
-cLow3=min(min(min(delay_interp_cont)));
-cHigh3=max(max(max(delay_interp_cont)));
+for jj=1:128
+    for kk=1:2432
+            zone_interp_cont(kk,jj)=sum(reshaped_interp_cont(kk,:,jj));
+    end
+end
+
 figure;
-imagesc(20*log10(abs(hilbert(delay_interp_cont(:,:)))),[cLow3,cHigh3])
+imagesc(20*log10(abs(hilbert(zone_interp_cont))),[20,80])
+title('Compressed B-Mode Image of Delayed Continuous Data')
 colormap('gray')
