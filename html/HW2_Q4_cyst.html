@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HW2_Q4</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-25"><meta name="DC.source" content="HW2_Q4.m"><style type="text/css">
+      --><title>HW2_Q4_cyst</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-25"><meta name="DC.source" content="HW2_Q4_cyst.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,13 +65,13 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">for</span> zz=1:length(pointTarget.data)
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">for</span> zz=1:length(aCyst.data)
     zf(zz,1)=(time(zz)*1540)/2;
 <span class="keyword">end</span>
 
 <span class="keyword">for</span> yy=1:length(zf)
     <span class="keyword">for</span> bb=-63.5:1:63.5
-        xe_cont(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xe_cont(yy,bb+64.5)=((aCyst.elementSpacingMM)/1000)*bb;
         diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
         time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;
     <span class="keyword">end</span>
@@ -86,7 +86,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="keyword">end</span>
 
 <span class="keyword">for</span> hh=1:128
-    temp_cont=interp1(time_withDelays_cont(:,hh),squeeze(pointTarget.data(:,hh,:)),timeArray2(:,hh),<span class="string">'linear'</span>,0);
+    temp_cont=interp1(time_withDelays_cont(:,hh),squeeze(aCyst.data(:,hh,:)),timeArray2(:,hh),<span class="string">'linear'</span>,0);
     reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2432,1,128]);
 <span class="keyword">end</span>
 
@@ -98,17 +98,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 figure;
 imagesc(20*log10(abs(hilbert(zone_interp_cont))),[20,80])
-title(<span class="string">'Compressed B-Mode Image of Delayed Continuous Data'</span>)
+title(<span class="string">'Compressed B-Mode Image of Delayed Continuous Data[cyst]'</span>)
 colormap(<span class="string">'gray'</span>)
-</pre><img vspace="5" hspace="5" src="HW2_Q4_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="HW2_Q4_cyst_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-for zz=1:length(pointTarget.data)
+for zz=1:length(aCyst.data)
     zf(zz,1)=(time(zz)*1540)/2;
 end 
 
 for yy=1:length(zf)
     for bb=-63.5:1:63.5
-        xe_cont(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xe_cont(yy,bb+64.5)=((aCyst.elementSpacingMM)/1000)*bb;
         diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
         time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;  
     end
@@ -123,7 +123,7 @@ for dd=1:length(timeArray)
 end
 
 for hh=1:128
-    temp_cont=interp1(time_withDelays_cont(:,hh),squeeze(pointTarget.data(:,hh,:)),timeArray2(:,hh),'linear',0);
+    temp_cont=interp1(time_withDelays_cont(:,hh),squeeze(aCyst.data(:,hh,:)),timeArray2(:,hh),'linear',0);
     reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2432,1,128]);
 end 
 
@@ -135,7 +135,7 @@ end
 
 figure;
 imagesc(20*log10(abs(hilbert(zone_interp_cont))),[20,80])
-title('Compressed B-Mode Image of Delayed Continuous Data')
+title('Compressed B-Mode Image of Delayed Continuous Data[cyst]')
 colormap('gray')
 
 ##### SOURCE END #####
