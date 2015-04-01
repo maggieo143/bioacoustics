@@ -47,8 +47,11 @@ theta= -sector/2;
 for i=1:no_lines
     
    %   Set the focus for this direction
-  xdc_focus (emit_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
-  xdc_focus (receive_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
+%   xdc_focus (emit_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
+%   xdc_focus (receive_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
+  
+  xdc_dynamic_focus (emit_aperture, 0, 0, 0);
+  xdc_dynamic_focus (receive_aperture, 0, 0, 0);
   
   %   Calculate the received response
   point_position=[[0 0 1]/1000; [0 0 10]/1000; [0 0 20]/1000; [0 0 30]/1000; [0 0 40]/1000; [0 0 50]/1000; [0 0 60]/1000; [0 0 70]/1000; [0 0 80]/1000; [0 0 90]/1000; [0 0 100]/1000; [0 0 110]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
@@ -82,8 +85,8 @@ imagesc(20*log10(abs(hilbert(point_spread_envelope))))
 title('Compressed Envelope Point Spread')
 colormap('gray')
 
-
 figure;
 imagesc(point_spread_envelope,[-0.4e-21,0.4e-21])
 title('Point Spread')
 colormap('gray')
+
