@@ -210,13 +210,13 @@ plot(c)
 title('filtered RF data beam 65')
 
 figure;
-d=fir1(10,228/2353,'bandpass')
+d=fir1(8,.00001)
 e=filtfilt(d,1,mean_fourier_rf);
 plot(e)
 title('filtered RF data all beams')
 
 figure;
-f=fir1(10,228/2353,'bandpass')
+f=fir1(8,.00001)
 g=filtfilt(f,1,20*log10(abs(hilbert(zone_interp_cont))));
 plot(g)
 imagesc(lat_array,axial_array,g,[30,80])

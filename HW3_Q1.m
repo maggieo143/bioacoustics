@@ -52,7 +52,7 @@ xdc_focus (emit_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
 xdc_focus (receive_aperture, 0, [70*sin(theta) 0 70*cos(theta)]/1000);
   
   %   Calculate the received response
-  point_position=[[0 0 1]/1000;[0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000;[0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
+  point_position=[[0 0 10]/1000;[0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000;[0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
   [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1]);
   %end
   
@@ -158,44 +158,44 @@ figure;
 imagesc(20*log10(abs(hilbert(point_spread_envelope))))
 title('Compressed Envelope Point Spread Dynamic Receive')
 colormap('gray')
+
 %%
 
-abs_hilb=abs(hilbert(point_spread_envelope));
+abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
 
 figure; 
 depth10=10/1000;
 sample10=(depth10/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample10)+148,:)))
+plot(abs_hilb_dB(round(sample10)+93,:))
 
 figure; 
 depth20=20/1000;
 sample20=(depth20/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample20)+148,:))) 
+plot(abs_hilb_dB(round(sample20)+93,:))
 
 figure; 
 depth40=40/1000;
 sample40=(depth40/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample40)+148,:)))
+plot(abs_hilb_dB(round(sample40)+93,:))
 
 figure; 
 depth60=60/1000;
 sample60=(depth60/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample60)+148,:)))
+plot(abs_hilb_dB(round(sample60)+93,:))
 
 figure; 
 depth80=80/1000;
 sample80=(depth80/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample80)+148,:)))
+plot(abs_hilb_dB(round(sample80)+93,:))
 
 figure; 
 depth100=100/1000;
 sample100=(depth100/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample100)+148,:)))
+plot(abs_hilb_dB(round(sample100)+93,:))
 
 figure; 
 depth120=120/1000;
 sample120=(depth120/1540)*2*fs;
-plot(20*log10(abs_hilb(round(sample120)+148,:)))
-
+plot(abs_hilb_dB(round(sample120)+93,:))
 
 samp=[sample10;sample20;sample40;sample60;sample80;sample100;sample120];
