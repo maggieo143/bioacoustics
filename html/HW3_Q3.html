@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HW2_Q4</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-02"><meta name="DC.source" content="HW2_Q4.m"><style type="text/css">
+      --><title>HW3_Q3</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-02"><meta name="DC.source" content="HW3_Q3.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,7 +65,52 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">for</span> zz=1:length(pointTarget_data)
+  </style></head><body><div class="content"><pre class="codeinput">f_num=2;
+binary_mask=zeros(2353,128);
+
+<span class="keyword">for</span> ff=1:2353
+    focal_length(ff)=(ff/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
+    pupil_diam(ff)=focal_length(ff)/f_num;
+    x_cols(ff)=round((pupil_diam(ff)/1540)*(2*(anecoicCyst.samplingRateMHz*(10^6))));
+    left_cols(ff)=64-(1/2)*x_cols(ff);
+    right_cols(ff)=64+(1/2)*x_cols(ff);
+    <span class="keyword">for</span> gg=1:128
+        <span class="keyword">if</span> left_cols(ff) &lt;=gg &amp; gg&lt;=right_cols(ff)
+         binary_mask(ff,gg)=1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+bin_mask_mat=repmat(binary_mask, [1,1,128]);
+tri_wind_binary=apod_mat_tri.*bin_mask_mat;
+
+figure; imagesc(lat_array,axial_array,tri_wind_binary(:,:,65))
+title(<span class="string">'Triangle Growth Window'</span>)
+colormap(<span class="string">'gray'</span>)
+axis <span class="string">image</span>
+colorbar
+
+pointTarget_data=pointTarget.data(80:end,:,:);
+triang_growth_pT=pointTarget_data.*tri_wind_binary;
+
+
+<span class="keyword">for</span> jj=1:128
+     <span class="keyword">for</span> kk=1:2353
+           sum_tri_growth(kk,jj)=sum(triang_growth_pT(kk,:,jj));
+     <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(lat_array,axial_array,sum_tri_growth,[-1000,1000])
+title(<span class="string">'Triangle Growth Window PointTarget'</span>)
+colormap(<span class="string">'gray'</span>)
+axis <span class="string">image</span>
+
+pointTarget_data=pointTarget.data(80:end,:,:);
+time=[0:1:size(pointTarget_data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(pointTarget.samplingRateMHz*(10^6)):(size(pointTarget_data,1)-1)/(pointTarget.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
+<span class="keyword">for</span> zz=1:length(pointTarget_data)
     zf(zz,1)=(time(zz)*1540)/2;
 <span class="keyword">end</span>
 
@@ -96,12 +141,75 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
     <span class="keyword">end</span>
 <span class="keyword">end</span>
 
-figure;
-imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
-title(<span class="string">'Point Target without Aperature Growth'</span>)
+lat_array=xe_cont(1,:);
+
+<span class="keyword">for</span> vv=1:2353
+axial_array(vv)=(vv/(2*(pointTarget.samplingRateMHz*(10^6))))*1540;
+<span class="keyword">end</span>
+
+
+<span class="comment">%triangle window</span>
+tri_window=reshape(triang(128),[1,128]);
+apod_mat_tri=repmat(tri_window, [2353,1,128]) ;
+apodization_tri=pointTarget_data.*apod_mat_tri;
+
+<span class="keyword">for</span> jj=1:128
+    <span class="keyword">for</span> kk=1:2353
+            sum_apod_tri(kk,jj)=sum(apodization_tri(kk,:,jj));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_tri))),[30,80])
+title(<span class="string">'Triangle Window Point Target'</span>)
 colormap(<span class="string">'gray'</span>)
-</pre><img vspace="5" hspace="5" src="HW2_Q4_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+axis <span class="string">image</span>
+</pre><img vspace="5" hspace="5" src="HW3_Q3_01.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q3_02.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q3_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
+f_num=2; 
+binary_mask=zeros(2353,128);
+
+for ff=1:2353
+    focal_length(ff)=(ff/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
+    pupil_diam(ff)=focal_length(ff)/f_num;
+    x_cols(ff)=round((pupil_diam(ff)/1540)*(2*(anecoicCyst.samplingRateMHz*(10^6))));
+    left_cols(ff)=64-(1/2)*x_cols(ff);
+    right_cols(ff)=64+(1/2)*x_cols(ff);
+    for gg=1:128
+        if left_cols(ff) <=gg & gg<=right_cols(ff)
+         binary_mask(ff,gg)=1;
+        end 
+    end 
+end 
+
+bin_mask_mat=repmat(binary_mask, [1,1,128]);
+tri_wind_binary=apod_mat_tri.*bin_mask_mat;
+
+figure; imagesc(lat_array,axial_array,tri_wind_binary(:,:,65))
+title('Triangle Growth Window')
+colormap('gray')
+axis image
+colorbar
+
+pointTarget_data=pointTarget.data(80:end,:,:);
+triang_growth_pT=pointTarget_data.*tri_wind_binary;
+
+
+for jj=1:128
+     for kk=1:2353
+           sum_tri_growth(kk,jj)=sum(triang_growth_pT(kk,:,jj));
+     end
+end
+
+figure; imagesc(lat_array,axial_array,sum_tri_growth,[-1000,1000])
+title('Triangle Growth Window PointTarget')
+colormap('gray')
+axis image
+
+pointTarget_data=pointTarget.data(80:end,:,:);
+time=[0:1:size(pointTarget_data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(pointTarget.samplingRateMHz*(10^6)):(size(pointTarget_data,1)-1)/(pointTarget.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
 for zz=1:length(pointTarget_data)
     zf(zz,1)=(time(zz)*1540)/2;
 end 
@@ -133,10 +241,29 @@ for jj=1:128
     end
 end
 
-figure;
-imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
-title('Point Target without Aperature Growth')
+lat_array=xe_cont(1,:); 
+
+for vv=1:2353
+axial_array(vv)=(vv/(2*(pointTarget.samplingRateMHz*(10^6))))*1540;
+end 
+
+
+%triangle window 
+tri_window=reshape(triang(128),[1,128]);
+apod_mat_tri=repmat(tri_window, [2353,1,128]) ;
+apodization_tri=pointTarget_data.*apod_mat_tri;
+
+for jj=1:128
+    for kk=1:2353
+            sum_apod_tri(kk,jj)=sum(apodization_tri(kk,:,jj));
+    end
+end
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_tri))),[30,80])
+title('Triangle Window Point Target')
 colormap('gray')
+axis image
+
 
 ##### SOURCE END #####
 --></body></html>

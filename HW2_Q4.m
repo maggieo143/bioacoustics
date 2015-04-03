@@ -31,5 +31,5 @@ end
 
 figure;
 imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
-title('Compressed B-Mode Image of Delayed Continuous Data')
+title('Point Target without Aperature Growth')
 colormap('gray')

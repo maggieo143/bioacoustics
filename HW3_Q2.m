@@ -34,9 +34,8 @@ for jj=1:128
     end
 end
 
-figure; imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
+figure; imagesc(20*log10(abs(hilbert(zone_interp_cont))))
 colormap('gray')
-axis image
 title('unfiltered cyst')
 %% Question 2) Apodization matrices
 lat_array=xe_cont(1,:); 
@@ -174,52 +173,3 @@ var_hann_bg=mean_hann_bg_sq-(mean_hann_bg).^2;
 
 CNR_hann=abs(mean_hann_bg-mean_hann)/sqrt(var_hann_bg+var_hann)
 
-%% Question 3) F/#
-
-f_num=2; 
-binary_zeros=zeros(2353,128);
-
-for ff=1:2353
-    focal_length(ff)=(ff/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
-    pupil_diam(jj)=focal_length(jj)/f_num;
-    
-end 
-
-
-if 64-diam/(2*pitch)<64<64+diam/(2*pitch)
-    
-figure;
-plot(20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
-title('Mag of FT of RF beam 65')
- 
-for gg=1:128
-    fourier_rf(:,gg)=20*log10(abs(fftshift(fft(zone_interp_cont(:,gg)))))';
-end 
-
-mean_fourier_rf=mean(fourier_rf,2);
-
-figure; 
-plot(mean_fourier_rf)
-title('Avg Mag of FT of all RF Beams')
-
-
-figure;
-b=fir1(10,228/2353,'bandpass')
-c=filtfilt(b,1,20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
-plot(c)
-title('filtered RF data beam 65')
-
-figure;
-d=fir1(10,228/2353,'bandpass')
-e=filtfilt(d,1,mean_fourier_rf);
-plot(e)
-title('filtered RF data all beams')
-
-figure;
-f=fir1(10,228/2353,'bandpass')
-g=filtfilt(f,1,20*log10(abs(hilbert(zone_interp_cont))));
-plot(g)
-imagesc(lat_array,axial_array,g,[30,80])
-colormap('gray')
-axis image
-title('filtered cyst')

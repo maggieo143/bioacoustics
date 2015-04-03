@@ -164,38 +164,46 @@ colormap('gray')
 abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
 
 figure; 
+subplot(4,2,1)
 depth10=10/1000;
 sample10=(depth10/1540)*2*fs;
 plot(abs_hilb_dB(round(sample10)+93,:))
+title('10mm')
 
-figure; 
+subplot(4,2,2)
 depth20=20/1000;
 sample20=(depth20/1540)*2*fs;
 plot(abs_hilb_dB(round(sample20)+93,:))
+title('20mm')
 
-figure; 
+subplot(4,2,3) 
 depth40=40/1000;
 sample40=(depth40/1540)*2*fs;
 plot(abs_hilb_dB(round(sample40)+93,:))
+title('40mm')
 
-figure; 
+subplot(4,2,4)
 depth60=60/1000;
 sample60=(depth60/1540)*2*fs;
 plot(abs_hilb_dB(round(sample60)+93,:))
+title('60mm')
 
-figure; 
+subplot(4,2,5)
 depth80=80/1000;
 sample80=(depth80/1540)*2*fs;
 plot(abs_hilb_dB(round(sample80)+93,:))
+title('80mm')
 
-figure; 
+subplot(4,2,6)
 depth100=100/1000;
 sample100=(depth100/1540)*2*fs;
 plot(abs_hilb_dB(round(sample100)+93,:))
+title('100mm')
 
-figure; 
+subplot(4,2,7)
 depth120=120/1000;
 sample120=(depth120/1540)*2*fs;
 plot(abs_hilb_dB(round(sample120)+93,:))
+title('120mm')
 
 samp=[sample10;sample20;sample40;sample60;sample80;sample100;sample120];

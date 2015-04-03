@@ -1,0 +1,450 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HW3_Q2</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-02"><meta name="DC.source" content="HW3_Q2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Question 2) Apodization matrices</a></li></ul></div><pre class="codeinput">anecoicCyst_data=anecoicCyst.data(80:end,:,:);
+time=[0:1:size(anecoicCyst_data,1)-1]*(1/((anecoicCyst.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(anecoicCyst.samplingRateMHz*(10^6)):(size(anecoicCyst_data,1)-1)/(anecoicCyst.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
+<span class="keyword">for</span> zz=1:length(anecoicCyst_data)
+    zf(zz,1)=(time(zz)*1540)/2;
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_cont(yy,bb+64.5)=((anecoicCyst.elementSpacingMM)/1000)*bb;
+        diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
+        time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_cont(yy,bb+64.5)=time_diag_cont(yy,bb+64.5)-time_diag_cont(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_cont(dd,:)=timeArray2(dd,:)+time_delay_cont(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_cont=interp1(timeArray2(:,hh),squeeze(anecoicCyst_data(:,hh,:)),time_withDelays_cont(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2353,1,128]);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> jj=1:128
+    <span class="keyword">for</span> kk=1:2353
+            zone_interp_cont(kk,jj)=sum(reshaped_interp_cont(kk,:,jj));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(20*log10(abs(hilbert(zone_interp_cont))))
+colormap(<span class="string">'gray'</span>)
+title(<span class="string">'unfiltered cyst'</span>)
+</pre><img vspace="5" hspace="5" src="HW3_Q2_01.png" alt=""> <h2>Question 2) Apodization matrices<a name="2"></a></h2><pre class="codeinput">lat_array=xe_cont(1,:);
+
+<span class="keyword">for</span> vv=1:2353
+axial_array(vv)=(vv/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
+<span class="keyword">end</span>
+
+<span class="comment">%rect window</span>
+rect_window=reshape(rectwin(128),[1,128]);
+apod_mat_rect=repmat(rect_window, [2353,1,128]);
+apodization_rect=anecoicCyst_data.*apod_mat_rect;
+
+<span class="keyword">for</span> jj=1:128
+    <span class="keyword">for</span> kk=1:2353
+            sum_apod_rect(kk,jj)=sum(apodization_rect(kk,:,jj));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_rect))),[30,80])
+title(<span class="string">'Rect Window'</span>)
+colormap(<span class="string">'gray'</span>)
+axis <span class="string">image</span>
+
+maskLesion = roipoly;
+maskLesion_bg = roipoly;
+
+sum_mask=sum(sum(maskLesion));
+sum_mask_bg=sum(sum(maskLesion_bg));
+
+rect=maskLesion.*abs(hilbert(sum_apod_rect));
+rect_bg=maskLesion_bg.*abs(hilbert(sum_apod_rect));
+
+sum_rect=sum(sum(rect));
+sum_rect_bg=sum(sum(rect_bg));
+
+mean_rect=sum_rect/sum_mask;
+mean_rect_bg=sum_rect_bg/sum_mask_bg;
+
+contrast_rect=-20*log10(mean_rect/mean_rect_bg)
+
+rect_sq=rect.^2;
+rect_bg_sq=rect_bg.^2;
+
+sum_rect_sq=sum(sum(rect_sq));
+sum_rect_bg_sq=sum(sum(rect_bg_sq));
+
+mean_rect_sq=sum_rect_sq/sum_mask;
+mean_rect_bg_sq=sum_rect_bg_sq/sum_mask_bg;
+
+var_rect=mean_rect_sq-(mean_rect).^2;
+var_rect_bg=mean_rect_bg_sq-(mean_rect_bg).^2;
+
+CNR_rect=abs(mean_rect_bg-mean_rect)/sqrt(var_rect_bg+var_rect)
+
+<span class="comment">%triangle window</span>
+tri_window=reshape(triang(128),[1,128]);
+apod_mat_tri=repmat(tri_window, [2353,1,128]) ;
+apodization_tri=anecoicCyst_data.*apod_mat_tri;
+
+<span class="keyword">for</span> jj=1:128
+    <span class="keyword">for</span> kk=1:2353
+            sum_apod_tri(kk,jj)=sum(apodization_tri(kk,:,jj));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_tri))),[30,80])
+title(<span class="string">'Triangle Window'</span>)
+colormap(<span class="string">'gray'</span>)
+axis <span class="string">image</span>
+
+tri=maskLesion.*abs(hilbert(sum_apod_tri));
+tri_bg=maskLesion_bg.*abs(hilbert(sum_apod_tri));
+
+sum_tri=sum(sum(tri));
+sum_tri_bg=sum(sum(tri_bg));
+
+mean_tri=sum_tri/sum_mask;
+mean_tri_bg=sum_tri_bg/sum_mask_bg;
+
+contrast_tri=-20*log10(mean_tri/mean_tri_bg)
+
+tri_sq=tri.^2;
+tri_bg_sq=tri_bg.^2;
+
+sum_tri_sq=sum(sum(tri_sq));
+sum_tri_bg_sq=sum(sum(tri_bg_sq));
+
+mean_tri_sq=sum_tri_sq/sum_mask;
+mean_tri_bg_sq=sum_tri_bg_sq/sum_mask_bg;
+
+var_tri=mean_tri_sq-(mean_tri).^2;
+var_tri_bg=mean_tri_bg_sq-(mean_tri_bg).^2;
+
+CNR_tri=abs(mean_tri_bg-mean_tri)/sqrt(var_tri_bg+var_tri)
+
+<span class="comment">%hann window</span>
+hann_window=reshape(hann(128),[1,128]);
+apod_mat_hann=repmat(hann_window, [2353,1,128]);
+apodization_hann=anecoicCyst_data.*apod_mat_hann;
+
+<span class="keyword">for</span> jj=1:128
+    <span class="keyword">for</span> kk=1:2353
+            sum_apod_hann(kk,jj)=sum(apodization_hann(kk,:,jj));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_hann))),[30,80])
+title(<span class="string">'Hann Window'</span>)
+colormap(<span class="string">'gray'</span>)
+axis <span class="string">image</span>
+
+hann_win=maskLesion.*abs(hilbert(sum_apod_hann));
+hann_bg=maskLesion_bg.*abs(hilbert(sum_apod_hann));
+
+sum_hann=sum(sum(hann_win));
+sum_hann_bg=sum(sum(hann_bg));
+
+mean_hann=sum_hann/sum_mask;
+mean_hann_bg=sum_hann_bg/sum_mask_bg;
+
+contrast_hann=-20*log10(mean_hann/mean_hann_bg)
+
+hann_sq=hann_win.^2;
+hann_bg_sq=hann_bg.^2;
+
+sum_hann_sq=sum(sum(hann_sq));
+sum_hann_bg_sq=sum(sum(hann_bg_sq));
+
+mean_hann_sq=sum_hann_sq/sum_mask;
+mean_hann_bg_sq=sum_hann_bg_sq/sum_mask_bg;
+
+var_hann=mean_hann_sq-(mean_hann).^2;
+var_hann_bg=mean_hann_bg_sq-(mean_hann_bg).^2;
+
+CNR_hann=abs(mean_hann_bg-mean_hann)/sqrt(var_hann_bg+var_hann)
+</pre><pre class="codeoutput">
+contrast_rect =
+
+    7.8466
+
+
+CNR_rect =
+
+    0.9349
+
+
+contrast_tri =
+
+    9.9695
+
+
+CNR_tri =
+
+    1.0800
+
+
+contrast_hann =
+
+   10.0158
+
+
+CNR_hann =
+
+    1.0869
+
+</pre><img vspace="5" hspace="5" src="HW3_Q2_02.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q2_03.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q2_04.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+anecoicCyst_data=anecoicCyst.data(80:end,:,:);
+time=[0:1:size(anecoicCyst_data,1)-1]*(1/((anecoicCyst.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(anecoicCyst.samplingRateMHz*(10^6)):(size(anecoicCyst_data,1)-1)/(anecoicCyst.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
+for zz=1:length(anecoicCyst_data)
+    zf(zz,1)=(time(zz)*1540)/2;
+end 
+
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_cont(yy,bb+64.5)=((anecoicCyst.elementSpacingMM)/1000)*bb;
+        diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
+        time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_cont(yy,bb+64.5)=time_diag_cont(yy,bb+64.5)-time_diag_cont(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_cont(dd,:)=timeArray2(dd,:)+time_delay_cont(dd,:);
+end
+
+for hh=1:128
+    temp_cont=interp1(timeArray2(:,hh),squeeze(anecoicCyst_data(:,hh,:)),time_withDelays_cont(:,hh),'linear',0);
+    reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2353,1,128]);
+end 
+
+for jj=1:128
+    for kk=1:2353
+            zone_interp_cont(kk,jj)=sum(reshaped_interp_cont(kk,:,jj));
+    end
+end
+
+figure; imagesc(20*log10(abs(hilbert(zone_interp_cont))))
+colormap('gray')
+title('unfiltered cyst')
+%% Question 2) Apodization matrices
+lat_array=xe_cont(1,:); 
+
+for vv=1:2353
+axial_array(vv)=(vv/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
+end 
+
+%rect window 
+rect_window=reshape(rectwin(128),[1,128]);
+apod_mat_rect=repmat(rect_window, [2353,1,128]);
+apodization_rect=anecoicCyst_data.*apod_mat_rect;
+
+for jj=1:128
+    for kk=1:2353
+            sum_apod_rect(kk,jj)=sum(apodization_rect(kk,:,jj));
+    end
+end
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_rect))),[30,80])
+title('Rect Window')
+colormap('gray')
+axis image
+
+maskLesion = roipoly;
+maskLesion_bg = roipoly;
+
+sum_mask=sum(sum(maskLesion));
+sum_mask_bg=sum(sum(maskLesion_bg));
+
+rect=maskLesion.*abs(hilbert(sum_apod_rect));
+rect_bg=maskLesion_bg.*abs(hilbert(sum_apod_rect));
+
+sum_rect=sum(sum(rect));
+sum_rect_bg=sum(sum(rect_bg));
+
+mean_rect=sum_rect/sum_mask;
+mean_rect_bg=sum_rect_bg/sum_mask_bg;
+
+contrast_rect=-20*log10(mean_rect/mean_rect_bg)
+
+rect_sq=rect.^2;
+rect_bg_sq=rect_bg.^2;
+
+sum_rect_sq=sum(sum(rect_sq)); 
+sum_rect_bg_sq=sum(sum(rect_bg_sq));
+
+mean_rect_sq=sum_rect_sq/sum_mask; 
+mean_rect_bg_sq=sum_rect_bg_sq/sum_mask_bg; 
+
+var_rect=mean_rect_sq-(mean_rect).^2;
+var_rect_bg=mean_rect_bg_sq-(mean_rect_bg).^2;
+
+CNR_rect=abs(mean_rect_bg-mean_rect)/sqrt(var_rect_bg+var_rect)
+
+%triangle window 
+tri_window=reshape(triang(128),[1,128]);
+apod_mat_tri=repmat(tri_window, [2353,1,128]) ;
+apodization_tri=anecoicCyst_data.*apod_mat_tri;
+
+for jj=1:128
+    for kk=1:2353
+            sum_apod_tri(kk,jj)=sum(apodization_tri(kk,:,jj));
+    end
+end
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_tri))),[30,80])
+title('Triangle Window')
+colormap('gray')
+axis image
+
+tri=maskLesion.*abs(hilbert(sum_apod_tri));
+tri_bg=maskLesion_bg.*abs(hilbert(sum_apod_tri));
+
+sum_tri=sum(sum(tri));
+sum_tri_bg=sum(sum(tri_bg));
+
+mean_tri=sum_tri/sum_mask;
+mean_tri_bg=sum_tri_bg/sum_mask_bg;
+
+contrast_tri=-20*log10(mean_tri/mean_tri_bg)
+
+tri_sq=tri.^2;
+tri_bg_sq=tri_bg.^2;
+
+sum_tri_sq=sum(sum(tri_sq)); 
+sum_tri_bg_sq=sum(sum(tri_bg_sq));
+
+mean_tri_sq=sum_tri_sq/sum_mask; 
+mean_tri_bg_sq=sum_tri_bg_sq/sum_mask_bg; 
+
+var_tri=mean_tri_sq-(mean_tri).^2;
+var_tri_bg=mean_tri_bg_sq-(mean_tri_bg).^2;
+
+CNR_tri=abs(mean_tri_bg-mean_tri)/sqrt(var_tri_bg+var_tri)
+
+%hann window 
+hann_window=reshape(hann(128),[1,128]);
+apod_mat_hann=repmat(hann_window, [2353,1,128]);
+apodization_hann=anecoicCyst_data.*apod_mat_hann;
+
+for jj=1:128
+    for kk=1:2353
+            sum_apod_hann(kk,jj)=sum(apodization_hann(kk,:,jj));
+    end
+end
+
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_apod_hann))),[30,80])
+title('Hann Window')
+colormap('gray')
+axis image
+
+hann_win=maskLesion.*abs(hilbert(sum_apod_hann));
+hann_bg=maskLesion_bg.*abs(hilbert(sum_apod_hann));
+
+sum_hann=sum(sum(hann_win));
+sum_hann_bg=sum(sum(hann_bg));
+
+mean_hann=sum_hann/sum_mask;
+mean_hann_bg=sum_hann_bg/sum_mask_bg; 
+
+contrast_hann=-20*log10(mean_hann/mean_hann_bg)
+
+hann_sq=hann_win.^2;
+hann_bg_sq=hann_bg.^2;
+
+sum_hann_sq=sum(sum(hann_sq)); 
+sum_hann_bg_sq=sum(sum(hann_bg_sq));
+
+mean_hann_sq=sum_hann_sq/sum_mask; 
+mean_hann_bg_sq=sum_hann_bg_sq/sum_mask_bg; 
+
+var_hann=mean_hann_sq-(mean_hann).^2;
+var_hann_bg=mean_hann_bg_sq-(mean_hann_bg).^2;
+
+CNR_hann=abs(mean_hann_bg-mean_hann)/sqrt(var_hann_bg+var_hann)
+
+
+##### SOURCE END #####
+--></body></html>

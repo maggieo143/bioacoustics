@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HW2_Q4</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-02"><meta name="DC.source" content="HW2_Q4.m"><style type="text/css">
+      --><title>HW3_Q4</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-02"><meta name="DC.source" content="HW3_Q4.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,78 +65,111 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">for</span> zz=1:length(pointTarget_data)
-    zf(zz,1)=(time(zz)*1540)/2;
+  </style></head><body><div class="content"><pre class="codeinput">figure;
+plot(20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
+title(<span class="string">'Mag of FT of RF beam 65'</span>)
+
+<span class="keyword">for</span> gg=1:128
+    fourier_rf(:,gg)=20*log10(abs(fftshift(fft(zone_interp_cont(:,gg)))))';
 <span class="keyword">end</span>
 
-<span class="keyword">for</span> yy=1:length(zf)
-    <span class="keyword">for</span> bb=-63.5:1:63.5
-        xe_cont(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
-        diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
-        time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;
-    <span class="keyword">end</span>
-
-    <span class="keyword">for</span> bb=-63.5:1:63.5
-    time_delay_cont(yy,bb+64.5)=time_diag_cont(yy,bb+64.5)-time_diag_cont(yy,65);
-    <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="keyword">for</span> dd=1:length(timeArray)
-    time_withDelays_cont(dd,:)=timeArray2(dd,:)+time_delay_cont(dd,:);
-<span class="keyword">end</span>
-
-<span class="keyword">for</span> hh=1:128
-    temp_cont=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,:)),time_withDelays_cont(:,hh),<span class="string">'linear'</span>,0);
-    reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2353,1,128]);
-<span class="keyword">end</span>
-
-<span class="keyword">for</span> jj=1:128
-    <span class="keyword">for</span> kk=1:2353
-            zone_interp_cont(kk,jj)=sum(reshaped_interp_cont(kk,:,jj));
-    <span class="keyword">end</span>
-<span class="keyword">end</span>
+mean_fourier_rf=mean(fourier_rf,2);
 
 figure;
-imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
-title(<span class="string">'Point Target without Aperature Growth'</span>)
+plot(mean_fourier_rf)
+title(<span class="string">'Avg Mag of FT of all RF Beams'</span>)
+
+
+figure;
+b=fir1(10,228/2353,<span class="string">'bandpass'</span>)
+c=filtfilt(b,1,20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
+plot(c)
+title(<span class="string">'filtered RF data beam 65'</span>)
+
+figure;
+d=fir1(10,228/2353,<span class="string">'bandpass'</span>)
+e=filtfilt(d,1,mean_fourier_rf);
+plot(e)
+title(<span class="string">'filtered RF data all beams'</span>)
+
+figure;
+f=fir1(10,228/2353,<span class="string">'bandpass'</span>)
+g=filtfilt(f,1,20*log10(abs(hilbert(zone_interp_cont))));
+plot(g)
+imagesc(lat_array,axial_array,g)
 colormap(<span class="string">'gray'</span>)
-</pre><img vspace="5" hspace="5" src="HW2_Q4_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+axis <span class="string">image</span>
+title(<span class="string">'filtered cyst'</span>)
+</pre><pre class="codeoutput">
+b =
+
+  Columns 1 through 7
+
+    0.0102    0.0252    0.0672    0.1249    0.1750    0.1949    0.1750
+
+  Columns 8 through 11
+
+    0.1249    0.0672    0.0252    0.0102
+
+
+d =
+
+  Columns 1 through 7
+
+    0.0102    0.0252    0.0672    0.1249    0.1750    0.1949    0.1750
+
+  Columns 8 through 11
+
+    0.1249    0.0672    0.0252    0.0102
+
+
+f =
+
+  Columns 1 through 7
+
+    0.0102    0.0252    0.0672    0.1249    0.1750    0.1949    0.1750
+
+  Columns 8 through 11
+
+    0.1249    0.0672    0.0252    0.0102
+
+</pre><img vspace="5" hspace="5" src="HW3_Q4_01.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q4_02.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q4_03.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q4_04.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q4_05.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-for zz=1:length(pointTarget_data)
-    zf(zz,1)=(time(zz)*1540)/2;
+figure;
+plot(20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
+title('Mag of FT of RF beam 65')
+ 
+for gg=1:128
+    fourier_rf(:,gg)=20*log10(abs(fftshift(fft(zone_interp_cont(:,gg)))))';
 end 
 
-for yy=1:length(zf)
-    for bb=-63.5:1:63.5
-        xe_cont(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
-        diag_dist_cont(yy,bb+64.5)=sqrt(zf(yy)^2 + (xe_cont(yy,bb+64.5))^2);
-        time_diag_cont(yy,bb+64.5)=diag_dist_cont(yy,bb+64.5)/1540;  
-    end
-    
-    for bb=-63.5:1:63.5
-    time_delay_cont(yy,bb+64.5)=time_diag_cont(yy,bb+64.5)-time_diag_cont(yy,65);
-    end
-end
+mean_fourier_rf=mean(fourier_rf,2);
 
-for dd=1:length(timeArray)
-    time_withDelays_cont(dd,:)=timeArray2(dd,:)+time_delay_cont(dd,:);
-end
+figure; 
+plot(mean_fourier_rf)
+title('Avg Mag of FT of all RF Beams')
 
-for hh=1:128
-    temp_cont=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,:)),time_withDelays_cont(:,hh),'linear',0);
-    reshaped_interp_cont(:,hh,:)=reshape(temp_cont,[2353,1,128]);
-end 
-
-for jj=1:128
-    for kk=1:2353
-            zone_interp_cont(kk,jj)=sum(reshaped_interp_cont(kk,:,jj));
-    end
-end
 
 figure;
-imagesc(20*log10(abs(hilbert(zone_interp_cont))),[30,80])
-title('Point Target without Aperature Growth')
+b=fir1(10,228/2353,'bandpass')
+c=filtfilt(b,1,20*log10(abs(fftshift(fft(zone_interp_cont(:,65))))));
+plot(c)
+title('filtered RF data beam 65')
+
+figure;
+d=fir1(10,228/2353,'bandpass')
+e=filtfilt(d,1,mean_fourier_rf);
+plot(e)
+title('filtered RF data all beams')
+
+figure;
+f=fir1(10,228/2353,'bandpass')
+g=filtfilt(f,1,20*log10(abs(hilbert(zone_interp_cont))));
+plot(g)
+imagesc(lat_array,axial_array,g)
 colormap('gray')
+axis image
+title('filtered cyst')
 
 ##### SOURCE END #####
 --></body></html>

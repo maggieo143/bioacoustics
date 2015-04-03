@@ -77,5 +77,5 @@ end
 
 figure;
 imagesc(20*log10(abs(hilbert(zone_interp_cont_2))),[30,80])
-title('Compressed B-Mode Image of Delayed Continuous Data')
+title('2 parallel receive beams')
 colormap('gray')
