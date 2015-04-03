@@ -1,3 +1,4 @@
+%% two parallel receive
 anecoicCyst_data=anecoicCyst.data(80:end,:,:);
 time=[0:1:size(anecoicCyst_data,1)-1]*(1/((anecoicCyst.samplingRateMHz)*(10^6)));
 timeArray=[0:1/(anecoicCyst.samplingRateMHz*(10^6)):(size(anecoicCyst_data,1)-1)/(anecoicCyst.samplingRateMHz*(10^6))]';
@@ -7,7 +8,7 @@ for zz=1:length(anecoicCyst_data)
     zf(zz,1)=(time(zz)*1540)/2;
 end 
 
-%% two parallel receive
+%%
 %pos pitch 
 for yy=1:length(zf)
     for bb=-63.5:1:63.5
@@ -67,7 +68,7 @@ for jj=1:64
     end
 end
 
-
+%% 
 zone_interp_cont_2=zeros(2353,128);
 
 for mm=1:64
