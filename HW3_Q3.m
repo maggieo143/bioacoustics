@@ -2,9 +2,9 @@ f_num=2;
 binary_mask=zeros(2353,128);
 
 for ff=1:2353
-    focal_length(ff)=(ff/(2*(anecoicCyst.samplingRateMHz*(10^6))))*1540;
+    focal_length(ff)=(ff/(2*(pointTarget.samplingRateMHz*(10^6))))*1540;
     pupil_diam(ff)=focal_length(ff)/f_num;
-    x_cols(ff)=round((pupil_diam(ff)/1540)*(2*(anecoicCyst.samplingRateMHz*(10^6))));
+    x_cols(ff)=round((pupil_diam(ff)/1540)*(2*(pointTarget.samplingRateMHz*(10^6))));
     left_cols(ff)=64-(1/2)*x_cols(ff);
     right_cols(ff)=64+(1/2)*x_cols(ff);
     for gg=1:128
@@ -15,13 +15,16 @@ for ff=1:2353
 end 
 
 bin_mask_mat=repmat(binary_mask, [1,1,128]);
-tri_wind_binary=apod_mat_tri.*bin_mask_mat;
+figure; imagesc(lat_array,axial_array,bin_mask_mat(:,:,65))
+title('Growth Window')
+colormap('gray')
+axis image
 
+tri_wind_binary=apod_mat_tri.*bin_mask_mat;
 figure; imagesc(lat_array,axial_array,tri_wind_binary(:,:,65))
 title('Triangle Growth Window')
 colormap('gray')
 axis image
-colorbar
 
 pointTarget_data=pointTarget.data(80:end,:,:);
 triang_growth_pT=pointTarget_data.*tri_wind_binary;
@@ -33,10 +36,11 @@ for jj=1:128
      end
 end
 
-figure; imagesc(lat_array,axial_array,sum_tri_growth,[-1000,1000])
+figure; imagesc(lat_array,axial_array,20*log10(abs(hilbert(sum_tri_growth))),[20,80])
 title('Triangle Growth Window PointTarget')
 colormap('gray')
 axis image
+colorbar
 
 pointTarget_data=pointTarget.data(80:end,:,:);
 time=[0:1:size(pointTarget_data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));

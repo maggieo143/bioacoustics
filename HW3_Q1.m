@@ -83,6 +83,53 @@ imagesc(20*log10(abs(hilbert(point_spread_envelope))))
 title('Compressed Envelope Point Spread')
 colormap('gray')
 
+
+abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+
+figure; 
+subplot(4,2,1)
+depth10=10/1000;
+samp10=(depth10/1540)*2*fs;
+plot(abs_hilb_dB(round(samp10)+130,:))
+title('10mm')
+
+subplot(4,2,2)
+depth20=20/1000;
+samp20=(depth20/1540)*2*fs;
+plot(abs_hilb_dB(round(samp20)+130,:))
+title('20mm')
+
+subplot(4,2,3) 
+depth40=40/1000;
+samp40=(depth40/1540)*2*fs;
+plot(abs_hilb_dB(round(samp40)+130,:))
+title('40mm')
+
+subplot(4,2,4)
+depth60=60/1000;
+samp60=(depth60/1540)*2*fs;
+plot(abs_hilb_dB(round(samp60)+130,:))
+title('60mm')
+
+subplot(4,2,5)
+depth80=80/1000;
+samp80=(depth80/1540)*2*fs;
+plot(abs_hilb_dB(round(samp80)+130,:))
+title('80mm')
+
+subplot(4,2,6)
+depth100=100/1000;
+samp100=(depth100/1540)*2*fs;
+plot(abs_hilb_dB(round(samp100)+130,:))
+title('100mm')
+
+subplot(4,2,7)
+depth120=120/1000;
+samp120=(depth120/1540)*2*fs;
+plot(abs_hilb_dB(round(samp120)+130,:))
+title('120mm')
+
+samp=[samp10;samp20;samp40;samp60;samp80;samp100; samp120]
 %% dynamic receive
 field_init(-1)
 
@@ -146,64 +193,63 @@ samples(ii)=times(ii)*fs;
 end 
 
 %preallocated zeros matrix for point spread function envelope
-point_spread_envelope=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
+point_spread_envelope_DR=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
 
 %point spread function envelope
 for kk=1:min(size(image_data))
-    point_spread_envelope(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
+    point_spread_envelope_DR(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
 end
 
 %image of point spread function envelope
 figure;
-imagesc(20*log10(abs(hilbert(point_spread_envelope))))
+imagesc(20*log10(abs(hilbert(point_spread_envelope_DR))))
 title('Compressed Envelope Point Spread Dynamic Receive')
 colormap('gray')
 
-%%
 
-abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+abs_hilb_dB_DR=20*log10(abs(hilbert(point_spread_envelope_DR)));
 
 figure; 
 subplot(4,2,1)
 depth10=10/1000;
 sample10=(depth10/1540)*2*fs;
-plot(abs_hilb_dB(round(sample10)+93,:))
+plot(abs_hilb_dB_DR(round(sample10)+93,:))
 title('10mm')
 
 subplot(4,2,2)
 depth20=20/1000;
 sample20=(depth20/1540)*2*fs;
-plot(abs_hilb_dB(round(sample20)+93,:))
+plot(abs_hilb_dB_DR(round(sample20)+93,:))
 title('20mm')
 
 subplot(4,2,3) 
 depth40=40/1000;
 sample40=(depth40/1540)*2*fs;
-plot(abs_hilb_dB(round(sample40)+93,:))
+plot(abs_hilb_dB_DR(round(sample40)+93,:))
 title('40mm')
 
 subplot(4,2,4)
 depth60=60/1000;
 sample60=(depth60/1540)*2*fs;
-plot(abs_hilb_dB(round(sample60)+93,:))
+plot(abs_hilb_dB_DR(round(sample60)+93,:))
 title('60mm')
 
 subplot(4,2,5)
 depth80=80/1000;
 sample80=(depth80/1540)*2*fs;
-plot(abs_hilb_dB(round(sample80)+93,:))
+plot(abs_hilb_dB_DR(round(sample80)+93,:))
 title('80mm')
 
 subplot(4,2,6)
 depth100=100/1000;
 sample100=(depth100/1540)*2*fs;
-plot(abs_hilb_dB(round(sample100)+93,:))
+plot(abs_hilb_dB_DR(round(sample100)+93,:))
 title('100mm')
 
 subplot(4,2,7)
 depth120=120/1000;
 sample120=(depth120/1540)*2*fs;
-plot(abs_hilb_dB(round(sample120)+93,:))
+plot(abs_hilb_dB_DR(round(sample120)+93,:))
 title('120mm')
 
-samp=[sample10;sample20;sample40;sample60;sample80;sample100;sample120];
+samp_dB=[sample10;sample20;sample40;sample60;sample80;sample100; sample120]
