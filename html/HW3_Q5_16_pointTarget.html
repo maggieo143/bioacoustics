@@ -1,0 +1,881 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>16 parallel receive</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-23"><meta name="DC.source" content="HW3_Q5_16_pointTarget.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>16 parallel receive</h1><pre class="codeinput">pointTarget_data=pointTarget.data(80:end,:,:);
+time=[0:1:size(pointTarget_data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(pointTarget.samplingRateMHz*(10^6)):(size(pointTarget_data,1)-1)/(pointTarget.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
+<span class="keyword">for</span> zz=1:length(pointTarget_data)
+    zf(zz,1)=(time(zz)*1540)/2;
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%1/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_1(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_1(yy,bb+64.5)=(.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_pos_1(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_1(yy,bb+64.5)-xf_pos_1(yy,bb+64.5))^2));
+        time_diag_pos_1(yy,bb+64.5)=diag_dist_pos_1(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_1(yy,bb+64.5)=time_diag_pos_1(yy,bb+64.5)-time_diag_pos_1(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_1(dd,:)=timeArray2(dd,:)+time_delay_pos_1(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_1=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_1(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_1(:,hh,:)=reshape(temp_pos_1,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%3/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_2(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_2(yy,bb+64.5)=(1.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_2(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_2(yy,bb+64.5)-xf_pos_2(yy,bb+64.5))^2));
+        time_diag_pos_2(yy,bb+64.5)=diag_dist_pos_2(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_2(yy,bb+64.5)=time_diag_pos_2(yy,bb+64.5)-time_diag_pos_2(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_2(dd,:)=timeArray2(dd,:)+time_delay_pos_2(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_2=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_2(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_2(:,hh,:)=reshape(temp_pos_2,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%5/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_3(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_3(yy,bb+64.5)=(2.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_3(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_3(yy,bb+64.5)-xf_pos_3(yy,bb+64.5))^2));
+        time_diag_pos_3(yy,bb+64.5)=diag_dist_pos_3(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_3(yy,bb+64.5)=time_diag_pos_3(yy,bb+64.5)-time_diag_pos_3(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_3(dd,:)=timeArray2(dd,:)+time_delay_pos_3(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_3=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_3(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_3(:,hh,:)=reshape(temp_pos_3,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%+7/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_4(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_4(yy,bb+64.5)=(3.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_4(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_4(yy,bb+64.5)-xf_pos_4(yy,bb+64.5))^2));
+        time_diag_pos_4(yy,bb+64.5)=diag_dist_pos_4(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_4(yy,bb+64.5)=time_diag_pos_4(yy,bb+64.5)-time_diag_pos_4(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_4(dd,:)=timeArray2(dd,:)+time_delay_pos_4(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_4=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_4(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_4(:,hh,:)=reshape(temp_pos_4,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%9/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_5(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_5(yy,bb+64.5)=(4.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_5(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_5(yy,bb+64.5)-xf_pos_5(yy,bb+64.5))^2));
+        time_diag_pos_5(yy,bb+64.5)=diag_dist_pos_5(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_5(yy,bb+64.5)=time_diag_pos_5(yy,bb+64.5)-time_diag_pos_5(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_5(dd,:)=timeArray2(dd,:)+time_delay_pos_5(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_5=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_5(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_5(:,hh,:)=reshape(temp_pos_5,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%+11/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_6(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_6(yy,bb+64.5)=(5.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_6(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_6(yy,bb+64.5)-xf_pos_6(yy,bb+64.5))^2));
+        time_diag_pos_6(yy,bb+64.5)=diag_dist_pos_6(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_6(yy,bb+64.5)=time_diag_pos_6(yy,bb+64.5)-time_diag_pos_6(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_6(dd,:)=timeArray2(dd,:)+time_delay_pos_6(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_6=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_6(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_6(:,hh,:)=reshape(temp_pos_6,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%13/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_7(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_7(yy,bb+64.5)=(6.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_7(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_7(yy,bb+64.5)-xf_pos_7(yy,bb+64.5))^2));
+        time_diag_pos_7(yy,bb+64.5)=diag_dist_pos_7(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_7(yy,bb+64.5)=time_diag_pos_7(yy,bb+64.5)-time_diag_pos_7(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_7(dd,:)=timeArray2(dd,:)+time_delay_pos_7(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_7=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_7(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_7(:,hh,:)=reshape(temp_pos_7,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%15/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_pos_8(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_8(yy,bb+64.5)=(7.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_8(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_8(yy,bb+64.5)-xf_pos_8(yy,bb+64.5))^2));
+        time_diag_pos_8(yy,bb+64.5)=diag_dist_pos_8(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_pos_8(yy,bb+64.5)=time_diag_pos_8(yy,bb+64.5)-time_diag_pos_8(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_pos_8(dd,:)=timeArray2(dd,:)+time_delay_pos_8(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_pos_8=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_8(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_pos_8(:,hh,:)=reshape(temp_pos_8,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-1/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_1(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_1(yy,bb+64.5)=(-.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_1(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_1(yy,bb+64.5)-xf_neg_1(yy,bb+64.5))^2));
+        time_diag_neg_1(yy,bb+64.5)=diag_dist_neg_1(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_1(yy,bb+64.5)=time_diag_neg_1(yy,bb+64.5)-time_diag_neg_1(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_1(dd,:)=timeArray2(dd,:)+time_delay_neg_1(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_1=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_1(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_1(:,hh,:)=reshape(temp_neg_1,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-3/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_2(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_2(yy,bb+64.5)=(-1.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_2(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_2(yy,bb+64.5)-xf_neg_2(yy,bb+64.5))^2));
+        time_diag_neg_2(yy,bb+64.5)=diag_dist_neg_2(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_2(yy,bb+64.5)=time_diag_neg_2(yy,bb+64.5)-time_diag_neg_2(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_2(dd,:)=timeArray2(dd,:)+time_delay_neg_2(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_2=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_2(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_2(:,hh,:)=reshape(temp_neg_2,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-5/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_3(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_3(yy,bb+64.5)=(-2.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_3(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_3(yy,bb+64.5)-xf_neg_3(yy,bb+64.5))^2));
+        time_diag_neg_3(yy,bb+64.5)=diag_dist_neg_3(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_3(yy,bb+64.5)=time_diag_neg_3(yy,bb+64.5)-time_diag_neg_3(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_3(dd,:)=timeArray2(dd,:)+time_delay_neg_3(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_3=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_3(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_3(:,hh,:)=reshape(temp_neg_3,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-7/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_4(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_4(yy,bb+64.5)=(-3.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_4(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_4(yy,bb+64.5)-xf_neg_4(yy,bb+64.5))^2));
+        time_diag_neg_4(yy,bb+64.5)=diag_dist_neg_4(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_4(yy,bb+64.5)=time_diag_neg_4(yy,bb+64.5)-time_diag_neg_4(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_4(dd,:)=timeArray2(dd,:)+time_delay_neg_4(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_4=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_4(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_4(:,hh,:)=reshape(temp_neg_4,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-9/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_5(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_5(yy,bb+64.5)=(-4.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_5(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_5(yy,bb+64.5)-xf_neg_5(yy,bb+64.5))^2));
+        time_diag_neg_5(yy,bb+64.5)=diag_dist_neg_5(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_5(yy,bb+64.5)=time_diag_neg_5(yy,bb+64.5)-time_diag_neg_5(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_5(dd,:)=timeArray2(dd,:)+time_delay_neg_5(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_5=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_5(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_5(:,hh,:)=reshape(temp_neg_5,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-11/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_6(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_6(yy,bb+64.5)=(-5.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_6(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_6(yy,bb+64.5)-xf_neg_6(yy,bb+64.5))^2));
+        time_diag_neg_6(yy,bb+64.5)=diag_dist_neg_6(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_6(yy,bb+64.5)=time_diag_neg_6(yy,bb+64.5)-time_diag_neg_6(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_6(dd,:)=timeArray2(dd,:)+time_delay_neg_6(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_6=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_6(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_6(:,hh,:)=reshape(temp_neg_6,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-13/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_7(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_7(yy,bb+64.5)=(-6.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_7(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_7(yy,bb+64.5)-xf_neg_7(yy,bb+64.5))^2));
+        time_diag_neg_7(yy,bb+64.5)=diag_dist_neg_7(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_7(yy,bb+64.5)=time_diag_neg_7(yy,bb+64.5)-time_diag_neg_7(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_7(dd,:)=timeArray2(dd,:)+time_delay_neg_7(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_7=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_7(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_7(:,hh,:)=reshape(temp_neg_7,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="comment">%-15/2</span>
+<span class="keyword">for</span> yy=1:length(zf)
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+        xe_neg_8(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_8(yy,bb+64.5)=(-7.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_8(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_8(yy,bb+64.5)-xf_neg_8(yy,bb+64.5))^2));
+        time_diag_neg_8(yy,bb+64.5)=diag_dist_neg_8(yy,bb+64.5)/1540;
+    <span class="keyword">end</span>
+
+    <span class="keyword">for</span> bb=-63.5:1:63.5
+    time_delay_neg_8(yy,bb+64.5)=time_diag_neg_8(yy,bb+64.5)-time_diag_neg_8(yy,65);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> dd=1:length(timeArray)
+    time_withDelays_neg_8(dd,:)=timeArray2(dd,:)+time_delay_neg_8(dd,:);
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> hh=1:128
+    temp_neg_8=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_8(:,hh),<span class="string">'linear'</span>,0);
+    reshaped_interp_neg_8(:,hh,:)=reshape(temp_neg_8,[2353,1,8]);
+<span class="keyword">end</span>
+</pre><pre class="codeinput">interp_16=zeros(2353,128,128);
+
+<span class="keyword">for</span> mm=0:7
+   interp_16(:,:,16*mm+1)=reshaped_interp_neg_8(:,:,mm+1);
+   interp_16(:,:,16*mm+2)=reshaped_interp_neg_7(:,:,mm+1);
+   interp_16(:,:,16*mm+3)=reshaped_interp_neg_6(:,:,mm+1);
+   interp_16(:,:,16*mm+4)=reshaped_interp_neg_5(:,:,mm+1);
+   interp_16(:,:,16*mm+5)=reshaped_interp_neg_4(:,:,mm+1);
+   interp_16(:,:,16*mm+6)=reshaped_interp_neg_3(:,:,mm+1);
+   interp_16(:,:,16*mm+7)=reshaped_interp_neg_2(:,:,mm+1);
+   interp_16(:,:,16*mm+8)=reshaped_interp_neg_1(:,:,mm+1);
+   interp_16(:,:,16*mm+9)=reshaped_interp_pos_1(:,:,mm+1);
+   interp_16(:,:,16*mm+10)=reshaped_interp_pos_2(:,:,mm+1);
+   interp_16(:,:,16*mm+11)=reshaped_interp_pos_3(:,:,mm+1);
+   interp_16(:,:,16*mm+12)=reshaped_interp_pos_4(:,:,mm+1);
+   interp_16(:,:,16*mm+13)=reshaped_interp_pos_5(:,:,mm+1);
+   interp_16(:,:,16*mm+14)=reshaped_interp_pos_6(:,:,mm+1);
+   interp_16(:,:,16*mm+15)=reshaped_interp_pos_7(:,:,mm+1);
+   interp_16(:,:,16*mm+16)=reshaped_interp_pos_8(:,:,mm+1);
+<span class="keyword">end</span>
+
+ <span class="keyword">for</span> jj=1:128
+     <span class="keyword">for</span> kk=1:2353
+            summed_interp_16(kk,jj)=sum(interp_16(kk,:,jj));
+     <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+figure;
+imagesc(20*log10(abs(hilbert(summed_interp_16))),[30,80])
+title(<span class="string">'16 parallel receive beams'</span>)
+colormap(<span class="string">'gray'</span>)
+</pre><img vspace="5" hspace="5" src="HW3_Q5_16_pointTarget_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% 16 parallel receive
+pointTarget_data=pointTarget.data(80:end,:,:);
+time=[0:1:size(pointTarget_data,1)-1]*(1/((pointTarget.samplingRateMHz)*(10^6)));
+timeArray=[0:1/(pointTarget.samplingRateMHz*(10^6)):(size(pointTarget_data,1)-1)/(pointTarget.samplingRateMHz*(10^6))]';
+timeArray2=repmat(timeArray,[1,128]);
+
+for zz=1:length(pointTarget_data)
+    zf(zz,1)=(time(zz)*1540)/2;
+end
+%%
+%1/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_1(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_1(yy,bb+64.5)=(.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_pos_1(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_1(yy,bb+64.5)-xf_pos_1(yy,bb+64.5))^2));
+        time_diag_pos_1(yy,bb+64.5)=diag_dist_pos_1(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_1(yy,bb+64.5)=time_diag_pos_1(yy,bb+64.5)-time_diag_pos_1(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_1(dd,:)=timeArray2(dd,:)+time_delay_pos_1(dd,:);
+end
+
+for hh=1:128
+    temp_pos_1=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_1(:,hh),'linear',0);
+    reshaped_interp_pos_1(:,hh,:)=reshape(temp_pos_1,[2353,1,8]);
+end 
+%%
+%3/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_2(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_2(yy,bb+64.5)=(1.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_2(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_2(yy,bb+64.5)-xf_pos_2(yy,bb+64.5))^2));
+        time_diag_pos_2(yy,bb+64.5)=diag_dist_pos_2(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_2(yy,bb+64.5)=time_diag_pos_2(yy,bb+64.5)-time_diag_pos_2(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_2(dd,:)=timeArray2(dd,:)+time_delay_pos_2(dd,:);
+end
+
+for hh=1:128
+    temp_pos_2=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_2(:,hh),'linear',0);
+    reshaped_interp_pos_2(:,hh,:)=reshape(temp_pos_2,[2353,1,8]);
+end 
+
+%%
+%5/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_3(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_3(yy,bb+64.5)=(2.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_3(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_3(yy,bb+64.5)-xf_pos_3(yy,bb+64.5))^2));
+        time_diag_pos_3(yy,bb+64.5)=diag_dist_pos_3(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_3(yy,bb+64.5)=time_diag_pos_3(yy,bb+64.5)-time_diag_pos_3(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_3(dd,:)=timeArray2(dd,:)+time_delay_pos_3(dd,:);
+end
+
+for hh=1:128
+    temp_pos_3=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_3(:,hh),'linear',0);
+    reshaped_interp_pos_3(:,hh,:)=reshape(temp_pos_3,[2353,1,8]);
+end 
+
+%%
+%+7/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_4(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_4(yy,bb+64.5)=(3.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_4(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_4(yy,bb+64.5)-xf_pos_4(yy,bb+64.5))^2));
+        time_diag_pos_4(yy,bb+64.5)=diag_dist_pos_4(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_4(yy,bb+64.5)=time_diag_pos_4(yy,bb+64.5)-time_diag_pos_4(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_4(dd,:)=timeArray2(dd,:)+time_delay_pos_4(dd,:);
+end
+
+for hh=1:128
+    temp_pos_4=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_4(:,hh),'linear',0);
+    reshaped_interp_pos_4(:,hh,:)=reshape(temp_pos_4,[2353,1,8]);
+end 
+%%
+%9/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_5(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_5(yy,bb+64.5)=(4.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_5(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_5(yy,bb+64.5)-xf_pos_5(yy,bb+64.5))^2));
+        time_diag_pos_5(yy,bb+64.5)=diag_dist_pos_5(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_5(yy,bb+64.5)=time_diag_pos_5(yy,bb+64.5)-time_diag_pos_5(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_5(dd,:)=timeArray2(dd,:)+time_delay_pos_5(dd,:);
+end
+
+for hh=1:128
+    temp_pos_5=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_5(:,hh),'linear',0);
+    reshaped_interp_pos_5(:,hh,:)=reshape(temp_pos_5,[2353,1,8]);
+end 
+%%
+%+11/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_6(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_6(yy,bb+64.5)=(5.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_6(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_6(yy,bb+64.5)-xf_pos_6(yy,bb+64.5))^2));
+        time_diag_pos_6(yy,bb+64.5)=diag_dist_pos_6(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_6(yy,bb+64.5)=time_diag_pos_6(yy,bb+64.5)-time_diag_pos_6(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_6(dd,:)=timeArray2(dd,:)+time_delay_pos_6(dd,:);
+end
+
+for hh=1:128
+    temp_pos_6=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_6(:,hh),'linear',0);
+    reshaped_interp_pos_6(:,hh,:)=reshape(temp_pos_6,[2353,1,8]);
+end 
+
+%%
+%13/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_7(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_7(yy,bb+64.5)=(6.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_7(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_7(yy,bb+64.5)-xf_pos_7(yy,bb+64.5))^2));
+        time_diag_pos_7(yy,bb+64.5)=diag_dist_pos_7(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_7(yy,bb+64.5)=time_diag_pos_7(yy,bb+64.5)-time_diag_pos_7(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_7(dd,:)=timeArray2(dd,:)+time_delay_pos_7(dd,:);
+end
+
+for hh=1:128
+    temp_pos_7=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_7(:,hh),'linear',0);
+    reshaped_interp_pos_7(:,hh,:)=reshape(temp_pos_7,[2353,1,8]);
+end 
+%%
+%15/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_pos_8(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_pos_8(yy,bb+64.5)=(7.5)*((pointTarget.elementSpacingMM)/1000);;
+        diag_dist_pos_8(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_pos_8(yy,bb+64.5)-xf_pos_8(yy,bb+64.5))^2));
+        time_diag_pos_8(yy,bb+64.5)=diag_dist_pos_8(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_pos_8(yy,bb+64.5)=time_diag_pos_8(yy,bb+64.5)-time_diag_pos_8(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_pos_8(dd,:)=timeArray2(dd,:)+time_delay_pos_8(dd,:);
+end
+
+for hh=1:128
+    temp_pos_8=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_pos_8(:,hh),'linear',0);
+    reshaped_interp_pos_8(:,hh,:)=reshape(temp_pos_8,[2353,1,8]);
+end 
+
+%%
+%-1/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_1(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_1(yy,bb+64.5)=(-.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_1(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_1(yy,bb+64.5)-xf_neg_1(yy,bb+64.5))^2));
+        time_diag_neg_1(yy,bb+64.5)=diag_dist_neg_1(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_1(yy,bb+64.5)=time_diag_neg_1(yy,bb+64.5)-time_diag_neg_1(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_1(dd,:)=timeArray2(dd,:)+time_delay_neg_1(dd,:);
+end
+
+for hh=1:128
+    temp_neg_1=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_1(:,hh),'linear',0);
+    reshaped_interp_neg_1(:,hh,:)=reshape(temp_neg_1,[2353,1,8]);
+end
+
+%%
+%-3/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_2(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_2(yy,bb+64.5)=(-1.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_2(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_2(yy,bb+64.5)-xf_neg_2(yy,bb+64.5))^2));
+        time_diag_neg_2(yy,bb+64.5)=diag_dist_neg_2(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_2(yy,bb+64.5)=time_diag_neg_2(yy,bb+64.5)-time_diag_neg_2(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_2(dd,:)=timeArray2(dd,:)+time_delay_neg_2(dd,:);
+end
+
+for hh=1:128
+    temp_neg_2=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_2(:,hh),'linear',0);
+    reshaped_interp_neg_2(:,hh,:)=reshape(temp_neg_2,[2353,1,8]);
+end 
+%%
+%-5/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_3(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_3(yy,bb+64.5)=(-2.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_3(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_3(yy,bb+64.5)-xf_neg_3(yy,bb+64.5))^2));
+        time_diag_neg_3(yy,bb+64.5)=diag_dist_neg_3(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_3(yy,bb+64.5)=time_diag_neg_3(yy,bb+64.5)-time_diag_neg_3(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_3(dd,:)=timeArray2(dd,:)+time_delay_neg_3(dd,:);
+end
+
+for hh=1:128
+    temp_neg_3=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_3(:,hh),'linear',0);
+    reshaped_interp_neg_3(:,hh,:)=reshape(temp_neg_3,[2353,1,8]);
+end 
+%%
+%-7/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_4(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_4(yy,bb+64.5)=(-3.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_4(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_4(yy,bb+64.5)-xf_neg_4(yy,bb+64.5))^2));
+        time_diag_neg_4(yy,bb+64.5)=diag_dist_neg_4(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_4(yy,bb+64.5)=time_diag_neg_4(yy,bb+64.5)-time_diag_neg_4(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_4(dd,:)=timeArray2(dd,:)+time_delay_neg_4(dd,:);
+end
+
+for hh=1:128
+    temp_neg_4=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_4(:,hh),'linear',0);
+    reshaped_interp_neg_4(:,hh,:)=reshape(temp_neg_4,[2353,1,8]);
+end 
+
+%%
+%-9/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_5(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_5(yy,bb+64.5)=(-4.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_5(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_5(yy,bb+64.5)-xf_neg_5(yy,bb+64.5))^2));
+        time_diag_neg_5(yy,bb+64.5)=diag_dist_neg_5(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_5(yy,bb+64.5)=time_diag_neg_5(yy,bb+64.5)-time_diag_neg_5(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_5(dd,:)=timeArray2(dd,:)+time_delay_neg_5(dd,:);
+end
+
+for hh=1:128
+    temp_neg_5=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_5(:,hh),'linear',0);
+    reshaped_interp_neg_5(:,hh,:)=reshape(temp_neg_5,[2353,1,8]);
+end 
+
+%%
+%-11/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_6(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_6(yy,bb+64.5)=(-5.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_6(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_6(yy,bb+64.5)-xf_neg_6(yy,bb+64.5))^2));
+        time_diag_neg_6(yy,bb+64.5)=diag_dist_neg_6(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_6(yy,bb+64.5)=time_diag_neg_6(yy,bb+64.5)-time_diag_neg_6(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_6(dd,:)=timeArray2(dd,:)+time_delay_neg_6(dd,:);
+end
+
+for hh=1:128
+    temp_neg_6=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_6(:,hh),'linear',0);
+    reshaped_interp_neg_6(:,hh,:)=reshape(temp_neg_6,[2353,1,8]);
+end 
+
+
+%%
+%-13/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_7(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_7(yy,bb+64.5)=(-6.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_7(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_7(yy,bb+64.5)-xf_neg_7(yy,bb+64.5))^2));
+        time_diag_neg_7(yy,bb+64.5)=diag_dist_neg_7(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_7(yy,bb+64.5)=time_diag_neg_7(yy,bb+64.5)-time_diag_neg_7(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_7(dd,:)=timeArray2(dd,:)+time_delay_neg_7(dd,:);
+end
+
+for hh=1:128
+    temp_neg_7=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_7(:,hh),'linear',0);
+    reshaped_interp_neg_7(:,hh,:)=reshape(temp_neg_7,[2353,1,8]);
+end 
+%%
+%-15/2
+for yy=1:length(zf)
+    for bb=-63.5:1:63.5
+        xe_neg_8(yy,bb+64.5)=((pointTarget.elementSpacingMM)/1000)*bb;
+        xf_neg_8(yy,bb+64.5)=(-7.5)*((pointTarget.elementSpacingMM)/1000);
+        diag_dist_neg_8(yy,bb+64.5)=sqrt(zf(yy)^2 + ((xe_neg_8(yy,bb+64.5)-xf_neg_8(yy,bb+64.5))^2));
+        time_diag_neg_8(yy,bb+64.5)=diag_dist_neg_8(yy,bb+64.5)/1540;  
+    end
+    
+    for bb=-63.5:1:63.5
+    time_delay_neg_8(yy,bb+64.5)=time_diag_neg_8(yy,bb+64.5)-time_diag_neg_8(yy,65);
+    end
+end
+
+for dd=1:length(timeArray)
+    time_withDelays_neg_8(dd,:)=timeArray2(dd,:)+time_delay_neg_8(dd,:);
+end
+
+for hh=1:128
+    temp_neg_8=interp1(timeArray2(:,hh),squeeze(pointTarget_data(:,hh,1:16:128)),time_withDelays_neg_8(:,hh),'linear',0);
+    reshaped_interp_neg_8(:,hh,:)=reshape(temp_neg_8,[2353,1,8]);
+end
+%%
+interp_16=zeros(2353,128,128);
+
+for mm=0:7
+   interp_16(:,:,16*mm+1)=reshaped_interp_neg_8(:,:,mm+1);
+   interp_16(:,:,16*mm+2)=reshaped_interp_neg_7(:,:,mm+1);
+   interp_16(:,:,16*mm+3)=reshaped_interp_neg_6(:,:,mm+1);
+   interp_16(:,:,16*mm+4)=reshaped_interp_neg_5(:,:,mm+1);
+   interp_16(:,:,16*mm+5)=reshaped_interp_neg_4(:,:,mm+1);
+   interp_16(:,:,16*mm+6)=reshaped_interp_neg_3(:,:,mm+1);
+   interp_16(:,:,16*mm+7)=reshaped_interp_neg_2(:,:,mm+1);
+   interp_16(:,:,16*mm+8)=reshaped_interp_neg_1(:,:,mm+1);
+   interp_16(:,:,16*mm+9)=reshaped_interp_pos_1(:,:,mm+1);
+   interp_16(:,:,16*mm+10)=reshaped_interp_pos_2(:,:,mm+1);
+   interp_16(:,:,16*mm+11)=reshaped_interp_pos_3(:,:,mm+1);
+   interp_16(:,:,16*mm+12)=reshaped_interp_pos_4(:,:,mm+1);
+   interp_16(:,:,16*mm+13)=reshaped_interp_pos_5(:,:,mm+1);
+   interp_16(:,:,16*mm+14)=reshaped_interp_pos_6(:,:,mm+1);
+   interp_16(:,:,16*mm+15)=reshaped_interp_pos_7(:,:,mm+1);
+   interp_16(:,:,16*mm+16)=reshaped_interp_pos_8(:,:,mm+1);
+end 
+
+ for jj=1:128
+     for kk=1:2353
+            summed_interp_16(kk,jj)=sum(interp_16(kk,:,jj));
+     end
+end
+
+figure;
+imagesc(20*log10(abs(hilbert(summed_interp_16))),[30,80])
+title('16 parallel receive beams')
+colormap('gray')
+
+##### SOURCE END #####
+--></body></html>
