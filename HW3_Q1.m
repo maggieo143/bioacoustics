@@ -36,7 +36,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 % Do phased array imaging
 %point_position=[0 0 70]/1000;   %  Position of the point to be imaged 
-no_lines=50;                    %  Number of A-lines in image
+no_lines=100;                    %  Number of A-lines in image
 sector=20 * pi/180;             %  Size of image sector
 d_theta=sector/no_lines;        %  Increment in angle for 90 deg. image
 
@@ -99,6 +99,7 @@ samp20=(depth20/1540)*2*fs;
 plot(abs_hilb_dB(round(samp20)+130,:))
 title('20mm')
 
+
 subplot(4,2,3) 
 depth40=40/1000;
 samp40=(depth40/1540)*2*fs;
@@ -129,7 +130,7 @@ samp120=(depth120/1540)*2*fs;
 plot(abs_hilb_dB(round(samp120)+130,:))
 title('120mm')
 
-samp=[samp10;samp20;samp40;samp60;samp80;samp100; samp120]
+samp=[samp10;samp20;samp40;samp60;samp80;samp100;samp120]
 %% dynamic receive
 field_init(-1)
 
@@ -159,7 +160,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 % Do phased array imaging
 %point_position=[0 0 70]/1000;   %  Position of the point to be imaged 
-no_lines=50;                    %  Number of A-lines in image
+no_lines=100;                    %  Number of A-lines in image
 sector=20 * pi/180;             %  Size of image sector
 d_theta=sector/no_lines;        %  Increment in angle for 90 deg. image
 
@@ -175,7 +176,7 @@ for i=1:no_lines
  xdc_dynamic_focus (receive_aperture, 0, theta, 0);
   
   %   Calculate the received response
-    point_position=[[0 0 10]/1000;[0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000;[0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
+    point_position=[[0 0 10]/1000; [0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000; [0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
   [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1]);
   %end
   
@@ -252,4 +253,4 @@ sample120=(depth120/1540)*2*fs;
 plot(abs_hilb_dB_DR(round(sample120)+93,:))
 title('120mm')
 
-samp_dB=[sample10;sample20;sample40;sample60;sample80;sample100; sample120]
+sample_dB_DR=[sample10;sample20;sample40;sample60;sample80;sample100; sample120]

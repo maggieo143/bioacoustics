@@ -402,8 +402,8 @@ for mm=0:7
    interp_16(:,:,16*mm+12)=reshaped_interp_pos_4(:,:,mm+1);
    interp_16(:,:,16*mm+13)=reshaped_interp_pos_5(:,:,mm+1);
    interp_16(:,:,16*mm+14)=reshaped_interp_pos_6(:,:,mm+1);
-   interp_16(:,:,16*mm+15)=reshaped_interp_pos_7(:,:,mm+1);
-   interp_16(:,:,16*mm+16)=reshaped_interp_pos_8(:,:,mm+1);
+   interp_16(:,:,16*mm+8)=reshaped_interp_pos_7(:,:,mm+1);
+   interp_16(:,:,16*mm+8)=reshaped_interp_pos_8(:,:,mm+1);
 end 
 
  for jj=1:128

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>HW3_Q1</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-03"><meta name="DC.source" content="HW3_Q1.m"><style type="text/css">
+      --><title>HW3_Q1</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-04-21"><meta name="DC.source" content="HW3_Q1.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -102,7 +102,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 <span class="comment">% Do phased array imaging</span>
 <span class="comment">%point_position=[0 0 70]/1000;   %  Position of the point to be imaged</span>
-no_lines=50;                    <span class="comment">%  Number of A-lines in image</span>
+no_lines=100;                    <span class="comment">%  Number of A-lines in image</span>
 sector=20 * pi/180;             <span class="comment">%  Size of image sector</span>
 d_theta=sector/no_lines;        <span class="comment">%  Increment in angle for 90 deg. image</span>
 
@@ -148,7 +148,69 @@ figure;
 imagesc(20*log10(abs(hilbert(point_spread_envelope))))
 title(<span class="string">'Compressed Envelope Point Spread'</span>)
 colormap(<span class="string">'gray'</span>)
-</pre><img vspace="5" hspace="5" src="HW3_Q1_01.png" alt=""> <h2>dynamic receive<a name="2"></a></h2><pre class="codeinput">field_init(-1)
+
+
+abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+
+figure;
+subplot(4,2,1)
+depth10=10/1000;
+samp10=(depth10/1540)*2*fs;
+plot(abs_hilb_dB(round(samp10)+130,:))
+title(<span class="string">'10mm'</span>)
+
+subplot(4,2,2)
+depth20=20/1000;
+samp20=(depth20/1540)*2*fs;
+plot(abs_hilb_dB(round(samp20)+130,:))
+title(<span class="string">'20mm'</span>)
+
+
+subplot(4,2,3)
+depth40=40/1000;
+samp40=(depth40/1540)*2*fs;
+plot(abs_hilb_dB(round(samp40)+130,:))
+title(<span class="string">'40mm'</span>)
+
+subplot(4,2,4)
+depth60=60/1000;
+samp60=(depth60/1540)*2*fs;
+plot(abs_hilb_dB(round(samp60)+130,:))
+title(<span class="string">'60mm'</span>)
+
+subplot(4,2,5)
+depth80=80/1000;
+samp80=(depth80/1540)*2*fs;
+plot(abs_hilb_dB(round(samp80)+130,:))
+title(<span class="string">'80mm'</span>)
+
+subplot(4,2,6)
+depth100=100/1000;
+samp100=(depth100/1540)*2*fs;
+plot(abs_hilb_dB(round(samp100)+130,:))
+title(<span class="string">'100mm'</span>)
+
+subplot(4,2,7)
+depth120=120/1000;
+samp120=(depth120/1540)*2*fs;
+plot(abs_hilb_dB(round(samp120)+130,:))
+title(<span class="string">'120mm'</span>)
+
+samp=[samp10;samp20;samp40;samp60;samp80;samp100;samp120]
+</pre><pre class="codeoutput">
+samp =
+
+   1.0e+04 *
+
+    0.1299
+    0.2597
+    0.5195
+    0.7792
+    1.0390
+    1.2987
+    1.5584
+
+</pre><img vspace="5" hspace="5" src="HW3_Q1_01.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q1_02.png" alt=""> <h2>dynamic receive<a name="2"></a></h2><pre class="codeinput">field_init(-1)
 
 f0=3e6;                  <span class="comment">%  Transducer center frequency [Hz]</span>
 fs=100e6;                <span class="comment">%  Sampling frequency [Hz]</span>
@@ -176,7 +238,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 <span class="comment">% Do phased array imaging</span>
 <span class="comment">%point_position=[0 0 70]/1000;   %  Position of the point to be imaged</span>
-no_lines=50;                    <span class="comment">%  Number of A-lines in image</span>
+no_lines=100;                    <span class="comment">%  Number of A-lines in image</span>
 sector=20 * pi/180;             <span class="comment">%  Size of image sector</span>
 d_theta=sector/no_lines;        <span class="comment">%  Increment in angle for 90 deg. image</span>
 
@@ -192,7 +254,7 @@ theta= -sector/2;
  xdc_dynamic_focus (receive_aperture, 0, theta, 0);
 
   <span class="comment">%   Calculate the received response</span>
-    point_position=[[0 0 10]/1000;[0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000;[0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  <span class="comment">%  Position of the point to be imaged</span>
+    point_position=[[0 0 10]/1000; [0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000; [0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  <span class="comment">%  Position of the point to be imaged</span>
   [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1]);
   <span class="comment">%end</span>
 
@@ -210,65 +272,80 @@ samples(ii)=times(ii)*fs;
 <span class="keyword">end</span>
 
 <span class="comment">%preallocated zeros matrix for point spread function envelope</span>
-point_spread_envelope=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
+point_spread_envelope_DR=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
 
 <span class="comment">%point spread function envelope</span>
 <span class="keyword">for</span> kk=1:min(size(image_data))
-    point_spread_envelope(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
+    point_spread_envelope_DR(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
 <span class="keyword">end</span>
 
 <span class="comment">%image of point spread function envelope</span>
 figure;
-imagesc(20*log10(abs(hilbert(point_spread_envelope))))
+imagesc(20*log10(abs(hilbert(point_spread_envelope_DR))))
 title(<span class="string">'Compressed Envelope Point Spread Dynamic Receive'</span>)
 colormap(<span class="string">'gray'</span>)
-</pre><img vspace="5" hspace="5" src="HW3_Q1_02.png" alt=""> <pre class="codeinput">abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+
+
+abs_hilb_dB_DR=20*log10(abs(hilbert(point_spread_envelope_DR)));
 
 figure;
 subplot(4,2,1)
 depth10=10/1000;
 sample10=(depth10/1540)*2*fs;
-plot(abs_hilb_dB(round(sample10)+93,:))
+plot(abs_hilb_dB_DR(round(sample10)+93,:))
 title(<span class="string">'10mm'</span>)
 
 subplot(4,2,2)
 depth20=20/1000;
 sample20=(depth20/1540)*2*fs;
-plot(abs_hilb_dB(round(sample20)+93,:))
+plot(abs_hilb_dB_DR(round(sample20)+93,:))
 title(<span class="string">'20mm'</span>)
 
 subplot(4,2,3)
 depth40=40/1000;
 sample40=(depth40/1540)*2*fs;
-plot(abs_hilb_dB(round(sample40)+93,:))
+plot(abs_hilb_dB_DR(round(sample40)+93,:))
 title(<span class="string">'40mm'</span>)
 
 subplot(4,2,4)
 depth60=60/1000;
 sample60=(depth60/1540)*2*fs;
-plot(abs_hilb_dB(round(sample60)+93,:))
+plot(abs_hilb_dB_DR(round(sample60)+93,:))
 title(<span class="string">'60mm'</span>)
 
 subplot(4,2,5)
 depth80=80/1000;
 sample80=(depth80/1540)*2*fs;
-plot(abs_hilb_dB(round(sample80)+93,:))
+plot(abs_hilb_dB_DR(round(sample80)+93,:))
 title(<span class="string">'80mm'</span>)
 
 subplot(4,2,6)
 depth100=100/1000;
 sample100=(depth100/1540)*2*fs;
-plot(abs_hilb_dB(round(sample100)+93,:))
+plot(abs_hilb_dB_DR(round(sample100)+93,:))
 title(<span class="string">'100mm'</span>)
 
 subplot(4,2,7)
 depth120=120/1000;
 sample120=(depth120/1540)*2*fs;
-plot(abs_hilb_dB(round(sample120)+93,:))
+plot(abs_hilb_dB_DR(round(sample120)+93,:))
 title(<span class="string">'120mm'</span>)
 
-samp=[sample10;sample20;sample40;sample60;sample80;sample100;sample120];
-</pre><img vspace="5" hspace="5" src="HW3_Q1_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+sample_dB_DR=[sample10;sample20;sample40;sample60;sample80;sample100; sample120]
+</pre><pre class="codeoutput">
+sample_dB_DR =
+
+   1.0e+04 *
+
+    0.1299
+    0.2597
+    0.5195
+    0.7792
+    1.0390
+    1.2987
+    1.5584
+
+</pre><img vspace="5" hspace="5" src="HW3_Q1_03.png" alt=""> <img vspace="5" hspace="5" src="HW3_Q1_04.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% normal 
 field_init(-1)
@@ -308,7 +385,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 % Do phased array imaging
 %point_position=[0 0 70]/1000;   %  Position of the point to be imaged 
-no_lines=50;                    %  Number of A-lines in image
+no_lines=100;                    %  Number of A-lines in image
 sector=20 * pi/180;             %  Size of image sector
 d_theta=sector/no_lines;        %  Increment in angle for 90 deg. image
 
@@ -355,6 +432,54 @@ imagesc(20*log10(abs(hilbert(point_spread_envelope))))
 title('Compressed Envelope Point Spread')
 colormap('gray')
 
+
+abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+
+figure; 
+subplot(4,2,1)
+depth10=10/1000;
+samp10=(depth10/1540)*2*fs;
+plot(abs_hilb_dB(round(samp10)+130,:))
+title('10mm')
+
+subplot(4,2,2)
+depth20=20/1000;
+samp20=(depth20/1540)*2*fs;
+plot(abs_hilb_dB(round(samp20)+130,:))
+title('20mm')
+
+
+subplot(4,2,3) 
+depth40=40/1000;
+samp40=(depth40/1540)*2*fs;
+plot(abs_hilb_dB(round(samp40)+130,:))
+title('40mm')
+
+subplot(4,2,4)
+depth60=60/1000;
+samp60=(depth60/1540)*2*fs;
+plot(abs_hilb_dB(round(samp60)+130,:))
+title('60mm')
+
+subplot(4,2,5)
+depth80=80/1000;
+samp80=(depth80/1540)*2*fs;
+plot(abs_hilb_dB(round(samp80)+130,:))
+title('80mm')
+
+subplot(4,2,6)
+depth100=100/1000;
+samp100=(depth100/1540)*2*fs;
+plot(abs_hilb_dB(round(samp100)+130,:))
+title('100mm')
+
+subplot(4,2,7)
+depth120=120/1000;
+samp120=(depth120/1540)*2*fs;
+plot(abs_hilb_dB(round(samp120)+130,:))
+title('120mm')
+
+samp=[samp10;samp20;samp40;samp60;samp80;samp100;samp120]
 %% dynamic receive
 field_init(-1)
 
@@ -384,7 +509,7 @@ xdc_impulse (receive_aperture, impulse_response);
 
 % Do phased array imaging
 %point_position=[0 0 70]/1000;   %  Position of the point to be imaged 
-no_lines=50;                    %  Number of A-lines in image
+no_lines=100;                    %  Number of A-lines in image
 sector=20 * pi/180;             %  Size of image sector
 d_theta=sector/no_lines;        %  Increment in angle for 90 deg. image
 
@@ -400,7 +525,7 @@ for i=1:no_lines
  xdc_dynamic_focus (receive_aperture, 0, theta, 0);
   
   %   Calculate the received response
-    point_position=[[0 0 10]/1000;[0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000;[0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
+    point_position=[[0 0 10]/1000; [0 0 20]/1000; [0 0 40]/1000; [0 0 60]/1000; [0 0 80]/1000; [0 0 100]/1000; [0 0 120]/1000];  %  Position of the point to be imaged
   [v, t1]=calc_scat(emit_aperture, receive_aperture, point_position, [1;1;1;1;1;1;1]);
   %end
   
@@ -418,66 +543,65 @@ samples(ii)=times(ii)*fs;
 end 
 
 %preallocated zeros matrix for point spread function envelope
-point_spread_envelope=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
+point_spread_envelope_DR=zeros(max(samples)+max(size(image_data)),min(size(image_data)));
 
 %point spread function envelope
 for kk=1:min(size(image_data))
-    point_spread_envelope(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
+    point_spread_envelope_DR(samples(kk):samples(kk)+max(size(image_data))-1,kk)=image_data(1:max(size(image_data)),kk);
 end
 
 %image of point spread function envelope
 figure;
-imagesc(20*log10(abs(hilbert(point_spread_envelope))))
+imagesc(20*log10(abs(hilbert(point_spread_envelope_DR))))
 title('Compressed Envelope Point Spread Dynamic Receive')
 colormap('gray')
 
-%%
 
-abs_hilb_dB=20*log10(abs(hilbert(point_spread_envelope)));
+abs_hilb_dB_DR=20*log10(abs(hilbert(point_spread_envelope_DR)));
 
 figure; 
 subplot(4,2,1)
 depth10=10/1000;
 sample10=(depth10/1540)*2*fs;
-plot(abs_hilb_dB(round(sample10)+93,:))
+plot(abs_hilb_dB_DR(round(sample10)+93,:))
 title('10mm')
 
 subplot(4,2,2)
 depth20=20/1000;
 sample20=(depth20/1540)*2*fs;
-plot(abs_hilb_dB(round(sample20)+93,:))
+plot(abs_hilb_dB_DR(round(sample20)+93,:))
 title('20mm')
 
 subplot(4,2,3) 
 depth40=40/1000;
 sample40=(depth40/1540)*2*fs;
-plot(abs_hilb_dB(round(sample40)+93,:))
+plot(abs_hilb_dB_DR(round(sample40)+93,:))
 title('40mm')
 
 subplot(4,2,4)
 depth60=60/1000;
 sample60=(depth60/1540)*2*fs;
-plot(abs_hilb_dB(round(sample60)+93,:))
+plot(abs_hilb_dB_DR(round(sample60)+93,:))
 title('60mm')
 
 subplot(4,2,5)
 depth80=80/1000;
 sample80=(depth80/1540)*2*fs;
-plot(abs_hilb_dB(round(sample80)+93,:))
+plot(abs_hilb_dB_DR(round(sample80)+93,:))
 title('80mm')
 
 subplot(4,2,6)
 depth100=100/1000;
 sample100=(depth100/1540)*2*fs;
-plot(abs_hilb_dB(round(sample100)+93,:))
+plot(abs_hilb_dB_DR(round(sample100)+93,:))
 title('100mm')
 
 subplot(4,2,7)
 depth120=120/1000;
 sample120=(depth120/1540)*2*fs;
-plot(abs_hilb_dB(round(sample120)+93,:))
+plot(abs_hilb_dB_DR(round(sample120)+93,:))
 title('120mm')
 
-samp=[sample10;sample20;sample40;sample60;sample80;sample100;sample120];
+sample_dB_DR=[sample10;sample20;sample40;sample60;sample80;sample100; sample120]
 ##### SOURCE END #####
 --></body></html>
